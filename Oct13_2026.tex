@@ -1,0 +1,2177 @@
+\documentclass{article}%
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{natbib}%
+\usepackage{hyperref}
+\setcounter{MaxMatrixCols}{30}
+%TCIDATA{OutputFilter=latex2.dll}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{CSTFile=40 LaTeX article.cst}
+%TCIDATA{Created=Saturday, May 23, 2026 21:58:06}
+%TCIDATA{LastRevised=Monday, October 05, 2026 15:02:22}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Standard LaTeX\Blank - Standard LaTeX Article">}
+%BeginMSIPreambleData
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+%EndMSIPreambleData
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\setlength{\emergencystretch}{1em}
+\begin{document}
+
+\title{Censorship as Bitcoin grows}
+\author{Micah Warren}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+We discuss possible tools a powerful or well-resourced actor could use to restrict which transactions are confirmed on the Bitcoin blockchain.  We discuss a model for feather-forking, and offer a cursory analysis on costs and likelihood of a feather fork succeeding.  We also discuss the idea of a hereditary taint on Bitcoin UTXOs.  We suggest that institutional adoption of Bitcoin may have created a landscape ripe for an effective taint.
+
+\end{abstract}
+
+\section{Introduction}
+
+Bitcoin was originally proposed in 2008 as a peer-to-peer payment system.
+Central to the design is the ability to evade censorship by
+powerful parties.  The question of to what degree
+Bitcoin is censorship resistant in practice becomes more relevant as Bitcoin settles into a
+global role in both payments and savings technology.  We refer the reader to
+the recent work of Hendrickson and Warmke \cite{HW} and references therein, for a longer overview of what is at stake.
+
+In late 2026 we face an open-end economic
+future.  As technological creative destruction accelerates, agentic commerce is rapidly
+becoming more real, and it is natural to conjecture that digitally
+native agents will prefer digitally native currencies. It is also natural to conjecture that the emergent footprints of these economies will depend on the assurances and affordances of available payment systems.  It is unclear if these economies will develop largely inside or outside walled
+gardens, or if there will be a strong preference for tamed currencies or more wild-west style, censorship resistant currencies.
+Certainly some agents will be averse to currencies whose access can be
+restricted by a motivated third party, on the other hand - those aligned with the third party may prefer this.
+
+Agents aside, people use Bitcoin, so the subject of censorship resistance is
+always salient.  Recent work in 
+\cite{HW} explored two vectors, including feather-forking, and determined
+that the most naive attempts are unlikely to control the network effectively.
+ The framework explored in \cite{HW} is one in which a healthy fraction of
+the mining hashrate is domiciled in the US and these miners can be coerced
+into mining according to some stated US interest.
+
+Bitcoin transactions are recorded on the blockchain, thus the blockchain is the single choke-point for future Bitcoin transactions. The blockchain
+is controlled by miners. In typical operations, miners are not incentivized to gate-keep transactions.   However, they are motivated by financial incentives, and
+can thus be manipulated by rewards or punishments. This is the idea behind the
+feather fork (proposed as far back as 2013 \cite{Miller13}).
+
+When attempting to control the blockchain, essentially there are three vectors available to a state actor:
+
+\begin{enumerate}
+\item Acquire and deploy your own hashrate
+
+\item Exercise direct control over domiciled miners
+
+\item Use bribery or financial incentives to influence miners
+\end{enumerate}
+
+If you have control over a significant
+minority (say 30\%), you may attempt to ``feather-fork'' the network.  If the
+total is somewhat over 50\% the question is entirely one of ability to enforce
+rules in your own jurisdiction.  We include discussion of ways to fortify
+feather-forking: one can strengthen the attack using type 1 and type 3 methods.
+ Type 1 may involve hashrate that is both expensive to obtain and to operate but would be activated only in order to enforce a reorg.
+ Adding direct financial incentive for miners to participate in the fork
+makes participation voluntary and profitable rather than compulsory.
+ However, this may open up the censor to intentional exploitation which could
+backfire.  This necessarily leads to a discussion of block-withholding; see
+section \ref{withholding}
+
+We also point out a major shift in miner incentives over the last two years
+that will change the game theory of mining moving forward.  Over this decade
+leading up to 2026, Bitcoin miners actively acquired and controlled electrical power in the process of
+developing large scale mining operations.  As AI compute became incredibly
+lucrative, many of the miners have pivoted their resources toward AI/HPC,
+which promises larger profit margins, and have seen stock valuations skyrocket.
+ These miners are no longer dependent on the success of Bitcoin to maintain
+share prices - they replace obsolete ASICs with HPC equipment and never
+look back.  Similarly, the boards of these corporations are being populated
+less by Bitcoin idealists and more traditional shareholder-value
+maximalists.
+
+This gives the state more leverage to manipulate the miners: A hugely
+profitable data center is less likely to take regulatory risks by rejecting requests from
+the state.
+
+\subsection{Tainting}
+
+We suggest a possible alternative route that doesn't involve heavy-handed
+control over miners.  Instead of fighting an ongoing battle to prevent coins
+from moving - a powerful player (such as the USG) could leverage control of
+significant economic institutions to implement a hereditary taint that
+effectively breaks the fungibility of Bitcoin.
+
+Here we suggest that the hereditary taint is likely to be effective if
+implemented carefully and deliberately.  In short, by prohibiting
+institutions from dealing with tainted coins, tainted Bitcoin has access to a
+strictly smaller market.  After establishing a separate, lower-demand version
+of Bitcoin, a state could further taint any coinbase transaction of a miner
+who mines a tainted transaction. If correctly implemented, this could tilt illicit
+Bitcoin transactions into a death spiral where they will neither be accepted
+as valid payment nor confirmed by miners.
+
+The idea of a taint is not entirely new but has not been well fleshed out.
+ We discuss it in earnest here and suggest that effectively implemented, this
+would give the US a button with which to freeze, or at least deprecate (not
+confiscate) Bitcoin that they know is held by SDNs, terrorists, hackers,
+pig-butchering scammers or other nuisances to the US interests.  With the
+UTXO structure, the Bitcoin blockchain provides a wonderfully helpful tool
+for tracking all transactions sourced from a known SDN.  We suggest a multistage roll-out of tainting that would overcome common criticisms.
+
+\subsection{Outline}
+
+In section \ref{feather} we recall how finite difference equations can be used
+to compute precise probabilities and expected values and use this as
+a base to discuss the viability of feather forking with less than 50\% of the
+hashrate.  We discuss the cost feasibility of obtaining the hashrate
+necessary to reorg on demand in sections \ref{fort} and  \ref{stockpile}.
+ Note that before 2025, the idea of acquiring hashrate on secondary market
+enough to attack may have seemed infeasible -- however market forces (in
+particularly AI/HPC optionality) may have changed the calculus.  We look
+further at using a pool to rent hashrate (and block-withholding) in section
+\ref{erntal}.
+
+We also mention something fitting into the context of game theory but hard to
+quantify: If races or reorgs begin to occur, this would represent an entirely
+new game theory regime.  The results would be unpredictable and likely negative for Bitcoin as a payment network.   While it is fun and easy to get lost in finite
+difference equations which produce very precise probabilities, this larger context must be kept in
+mind.  Once reorgs happen with any frequency, new exploits and attacks become
+available.  Double-spend attacks, which were described in the white paper
+\cite{Nakamoto08} but have not been a factor in recent years, might become a real threat, as could other threats that
+are to date merely theoretical such as selfish mining
+\cite{ES14} and fee-sniping \cite{Carlsten16}.
+
+This leads to an important
+soft side to the argument. Disruptive or drawn-out reorgs are problematic.
+This consideration should underpin any discussion involving coercing Bitcoin
+via reorgs - the censor must also aim to be surgical and decisive.  If the censor behaves
+disruptively, the network may find ways to exclude the censor from
+consensus. These considerations are discussed in section \ref{reorgs}.
+
+This is all couched within another soft question - is censorship bad for Bitcoin?  If the blockchain operates \textquotedblleft
+normally\textquotedblright except  when terrorists, pedophiles or
+pig-butchering scammers attempt to transact, does this frighten economic actors away from Bitcoin?  With this in mind, we discuss the hereditary taint in section  \ref{taint}.
+
+\section{Feather forking \label{feather}}
+
+The idea of the feather fork, first discussed on BitcoinTalk in 2013  \cite{Miller13},
+surveyed in \cite{Bonneau15}, and discussed further in \cite{HW}, is as follows.  If a
+minority of hashrate (say 20\%) commits to attempting to reorg any block which
+contains a forbidden transaction, there will be a positive probability (say
+4\%) that the miner who mined the forbidden transaction will lose the block.
+This imposes additional risk on the miner, bending their incentives to not
+include the transaction unless the transaction fee is quite large.  If a
+block is written with a sanctioned transaction, miners under the censor's
+control are directed to ignore that block and attempt to build a competing
+chain.  While not stated as an explicit policy proposal, a scenario where
+miners attempt to supplant the blocks of non-compliant miners was alluded to by
+former Director for Cybersecurity and Secure Digital Innovation at the White
+House National Security Council Carole House in 2023 \cite{House23}.
+
+ In the simplest version, if a fraction $p$ of hashrate commits to this,
+there is at least a $p^{2}$ probability that two consecutive blocks will be
+written by compliant miners, supplanting the block containing the offending transaction.
+ Not only does this remove the sanctioned transaction from the chain, but it
+punishes the miner who mined the block by depriving them of their block
+reward.  So even though $p^{2}$ might be a small probability, it may be
+enough to incentivize most miners to avoid the risk.
+
+ With short-term considerations, it only becomes economically rational for
+miners to include a sanctioned transaction if the added fees compensate for the
+risk.  If the fees are provided, the miners will accept the risk and the
+transactions are likely to make it onto the chain.  Unless you can
+consistently marshal over 50\% of the hashrate, eventually the transactions
+will hit the chain - albeit with some fees and inconvenience to the sanctioned
+party.
+
+A problem with this approach, highlighted in \cite[pg 15]{HW}, is that miners
+would be reluctant and hence resistant or non-compliant. These miners could
+either leave the jurisdiction, shut down, or mine in a way that evades the
+edicts.  It's costly to mine a chain that ends up losing - and without more
+than 50\% of the hashrate this will remain a likely outcome.  We will
+present how costly below.
+
+We discuss here a model as presented in \cite[Chapter 5]{Warren23} - this
+differs from the model in \cite{HW} where the hashrate was a strategy
+parameter - we instead assume that the hashrate available to a miner is fixed and the miner is operating at the maximum.
+
+These days, the assumption of fixed hashrate is not expected to be entirely
+correct; many miners may have less efficient hashrate that is not being used;
+One may also assume that in an active reorg battle the most interested parties
+(the censor and the miner protecting their mined block) will be using close
+to maximal hashrate. This is a nontrivial assumption - one would expect that
+while miners do have some unused hashrate - one also expects that they would
+not have unlimited, or enough to enact a 51\% attack.
+
+ One could refine the model more at the cost of complexity.  It's worth
+noting that given a gradient of marginal cost of mining, other miners (those
+who have not picked a side in a reorg race) may reduce slightly during an
+active race if they feel their expected value is reduced.  However the model starts
+to become complicated if we involve marginal hashcosts over a large set of
+miners.  Among other difficulties, this would require us to guess at not
+only the hashrate (generally observable in practice) of various parties but
+the shape of their marginal cost curve (not observable.)
+
+Presumably neutral miners have a choice in mining two different chains.
+ Most of the time the rewards in either choice of chain will be close
+(provided any large fee is already claimed) but if the race is active, there
+is a positive probability that regardless of which block is found, the rewards
+will be lost.  Usually, pending the choice of the lucky neutral miner who
+finds the block, one side will be favored to win - but this does not reduce
+the risk to zero. The fraction of neutral miners that are actively minimizing
+this risk should be a parameter of a more complicated model. We also note that
+this risk may lead free agent miners to join pools during a race to get
+guaranteed FPPS; see section \ref{fppssafe}.
+
+\subsection{Modeling a feather fork}
+
+The basic setup:  Suppose that you have some fraction $p$ of hashrate under
+your control.  As in \cite{Bonneau15} we work with a slightly more punishing
+form of Carole House's suggested version of a feather fork \cite{House23} as
+follows: If a miner mines a non-compliant block at height $N+1$; all compliant
+miners are instructed to mine a compliant chain starting from height $N,$
+until either the compliant fork wins or the non-compliant chain is 2 full
+blocks ahead.  Note that we could choose any $k\geq2$ in place of $2$ here;
+if $p$ is near 50\% there is advantage to this, but it can be more costly for
+the compliant miners.
+
+First we claim this strategy can be superior to simply trying to pull ahead
+via a short bang-bang reorg: Suppose you have 20\% of miners in your control.
+ There is a 20\% chance they equalize the chain, but only a 4\% chance they go
+back-to-back and perform the reorg.  However, if after equalizing - the
+conditions are still in place that they will continue on the fork if a neutral
+miner finds a block on the original chain, the neutral miners, who are
+presumably not being paid an extra fee to extend this chain, now have
+incentive to mine the fork so as to avoid their block being supplanted.
+ This advantage is large if the compliant force is more committed to
+winning the race than the party who mined the original block.
+
+We will model scenarios with a parameter $\gamma$ describing how willing the neutral miners
+are to support the compliant chain during a tie.
+
+We outline the basic approach here, details are in the appendix; (also see
+\cite[Chapter 5]{Warren23}).
+
+\subsubsection{Modeling as a markov chain with state variables}
+
+In the most basic form the reorg game is modeled by a single state variable:
+$d,$ where $d$ is the number of blocks the compliant chain is behind.  This
+would typically start at $d=1$.  As each block is found, there is a
+probability that either $d$ increases by one or the complementary probability
+(excluding block withholding for this model) that $d$ decreases by 1.
+
+We consider two different scenarios.
+
+Simplest model (Model 1.) The game ends when $d=-1$ (compliant wins) or when
+$d=k$ (compliant concedes). Compliant miners comprise hashrate $p$ and always
+mine the compliant chain until conceding.  Other miners follow the first-seen
+rule and mine the non-compliant chain until $d=-1,$ at which point they switch
+to mining the compliant chain.
+
+Model 2.  As above, game ends with $d=-1$ or $d=k$ but some portion $\gamma$
+of the free agent miners opt to mine with the compliant miners when $d=0.$
+Mining with the compliant miners ends the game, whereas mining
+against them resets to $d=1$ so still incurs a positive probability of losing
+the block.  (Note that this effect can also be created by mining an empty
+block that leaves fees available - miners will find your chain more attractive
+because they receive higher fees by choosing that chain - see
+\cite{Carlsten16} - in practice a feather-forker should consider using undercutting to increase $\gamma$. )
+
+Even these two models involve simplification: The portion $\gamma$ should
+presumably change dynamically, if a pool mines a block, they have likely
+picked a side as their reward is now tied to one side winning.  It could be
+that the pool who mined the original offending block has rational incentive to
+fight the reorg.  In this case the game doesn't end at $d=-1$, rather it ends
+at some $d=-l$ where it makes sense for the miner to concede.  The assumption
+about who will follow first-seen rule is complicated because as this game
+continues, multiple miners could have a stake in the original-but-later-reorged
+chain; if these have knowledge of each other's hashrate they may become more
+confident to continue to fight.  Also, if the race drags on and both chains
+are long, it may be rational to recompute $l$ or $k$ to be larger.  In
+practice this is probably easier done with simulation rather than a closed
+formula (code simulating these scenarios is straightforward for modern LLMs and
+computationally inexpensive.)
+
+\subsubsection{Case 1.}
+
+If a non-compliant miner mines a block with fee $f$ (assume units in terms of
+the expected block reward) and a compliant hashrate $p$ tries to fight back
+with conceding deficit $k,$ \textbf{the probability of a successful reorg}
+when $d$ blocks behind is given by $W(d)$, see (\ref{Awin})
+\[
+W(d)=\frac{m^{k+1}-m^{d+1}}{m^{k+1}-1}%
+\]
+for
+\[
+m=\frac{p}{1-p}.
+\]
+In particular, as the race begins at $d=1,$  \
+\[
+W(1)=\frac{m^{k+1}-m^{2}}{m^{k+1}-1} .%
+\]
+For example, with $k=2$ and $k=5$ we have%
+
+\[ \begin{tabular}[c]{lll} $p$ & $W(1),k=2$ & $W(1),k=5$\\ \hline $0.10$ & $0.0110$ & $0.0123$\\ $0.20$ & $0.0476$ & $0.0623$\\ $0.30$ & $0.1139$ & $0.1786$\\ $0.45$ & $0.2691$ & $0.5278$\\ $0.60$ & $0.4737$ & $0.8797$ \end{tabular} \]
+
+So even with 45\% of the hashrate, there is less than 27\% chance of winning
+when conceding at $k=2$ but this jumps significantly with $k=5.$  Also note
+that even with 60\% of the hashrate the attempt is still more likely to fail
+at $k=2$ and highly likely to succeed when $k=5.$  By extending $k$ to be
+larger, the probability of winning approaches $1$ whenever $p>0.5,$ but so
+does the expected time the game takes. 
+
+ \textbf{The expected time to resolution} (see (\ref{fullT})) is given
+by
+\[
+T(1)=\frac{1}{1-2p}\frac{1}{m^{k}-m^{-1}}\left[  \left(  k+1\right)
+m-(k-1)m^{-1}-2m^{k}\right]
+\]
+For example, again with $k=2$ and $k=5$%
+
+
+\[ \begin{tabular}[c]{lll} $p$ & $T(1),k=2$ & $T(1),k=5$\\ \hline $0.10$ & $1.2088$ & $4.9074$\\ $0.20$ & $1.4286$ & $6.0440$\\ $0.30$ & $1.6456$ & $7.3212$\\ $0.45$ & $1.9269$ & $8.3347$\\ $0.60$ & $2.1053$ & $6.3910$ \end{tabular} \]
+
+
+Here we see that keeping $k$ small decreases the expected amount of time
+spent.  This reduces costs to the compliant miner, which we compute next.
+
+\textbf{The expected loss for mining the compliant chain} is given by the
+formula (\ref{eyecandy}):%
+
+
+\[ C(1,0)= \frac{ p\left[ (1-k)m^{k+2}-(k+1)m^{2}-2m+(k+1)m^{k}+k-1+2m^{k+1} \right] }{ (1-2p)\left(m^{k+1}-1\right)^{2} } \]
+This measures the number of blocks all miners in the compliant pool expect to
+miss out compared to if they had continued to mine the chain tip.  For
+example, again with $k=2$ and $k=5$
+
+\[ \begin{tabular}[c]{lll} $p$ & $C(1,0),k=2$ & $C(1,0),k=5$\\ \hline $0.10$ & $0.0978$ & $0.4630$\\ $0.20$ & $0.1814$ & $1.0442$\\ $0.30$ & $0.2355$ & $1.6170$\\ $0.45$ & $0.2404$ & $1.5170$\\ $0.60$ & $0.1662$ & $0.3473$ \end{tabular} \]
+
+Here we see why one might choose $k$ smaller - despite some increase in the
+chance of winning, the drawn out race results in much more costs for compliant
+miners.  Also note that the values in the table represent total loss to this
+class of miners - so even though the value 0.2404 is larger than 0.2355, it
+represents less loss \textit{per hashrate} of the compliant miners. Note that
+this is not a loss in the sense of profit and loss, this is only in comparison
+to the revenue they \textit{would have earned} had they mined the chain tip.
+ Whether or not they are in profit or loss is our next question.
+
+From the compliant miners' perspective, we should discuss another expectation
+involving a parameter $q$ describing the additional costs of not turning
+machines off (equivalently savings by turning machines off). This ignores
+overhead and capex cost and is meant to inform miners forced to mine only the
+compliant chain if they are going to be profitable or lose money by mining.
+ If mining is profitable relative to operating expenses, it can remain
+profitable even while obtaining slightly less revenue.
+
+\textbf{The expected gain for mining the compliant chain minus energy costs
+}is given by the number of blocks won by miners at the end minus the energy
+costs.  In the following $q$ (presumably less than $p)$ is the fraction of a
+block reward that is expended by the compliant miners in pausable operating
+costs. (To be clear, if $p=0.3$ and $q=0.15$ this means that pausable costs
+are about 50\% of revenue.  We are ignoring other costs because those are
+sunk and can't be controlled.) So we compute the gain of mining versus
+turning off.  If the number is negative, it is smart to turn off.  This
+expected gain is a  somewhat unpleasant formula  (\ref{G_app}), which we leave in the appendix.  The first table shows what happens if these costs make up
+1/3 of the revenue:
+
+\begin{equation} \begin{tabular}[c]{lll} $p$ & $G(1),k=2,q=p/3$ & $G(1),k=5,q=p/3$\\ \hline $0.10$ & $-0.0172$ & $-0.1358$\\ $0.20$ & $+0.0091$ & $-0.2384$\\ $0.30$ & $+0.0936$ & $-0.1527$\\ $0.45$ & $+0.3377$ & $+0.9834$\\ $0.60$ & $+0.6759$ & $+2.2091$ \end{tabular} \label{t4} \end{equation}
+
+
+
+As we see for $k=2$ and $p\geq0.2,$ it remains prudent to continue to mine
+despite the lower revenue.  For higher costs 2/3 of revenue there are more
+situations when the choice should be to pause operations.%
+
+\[%
+\begin{tabular}[c]{lll} $p$ & $G(1),k=2,q=2p/3$ & $G(1),k=5,q=2p/3$\\ \hline $0.10$ & $-0.0575$ & $-0.2994$\\ $0.20$ & $-0.0862$ & $-0.6413$\\ $0.30$ & $-0.0710$ & $-0.8849$\\ $0.45$ & $+0.0486$ & $-0.2668$\\ $0.60$ & $+0.2548$ & $+0.9309$ \end{tabular}
+\
+\]
+
+
+Finally we look from perspective of a free agent miner considering taking a
+fee to mine a non-compliant block.  This ultimately is what determines
+whether a feather fork will alter the behavior of miners whose
+\textquotedblleft rational'' behavior is to maximize block reward expectations.
+
+We assume that a free agent miner can mine additional fees $f$ (again in units
+of block reward).  The following table describes this \textbf{miner's expected
+improvement} at the end of the race relative to if they had let the fees lie
+unmined.  (Formula is large, left to appendix (\ref{Fgen}, \ref{Agen})).  %
+When computing this, one must take into consideration the possibility that the miner might mine further blocks along the race which are subsequently lost - so the final value depends also on the fraction $r$ of the total hashrate that miner commands.   In the following we let $r=0.10$:
+
+\[%
+\begin{tabular}[c]{lll} $p$ & $F(1,0),k=2$ & $F(1,0),k=5$\\ \hline $0.10$ & $0.9890f-0.0111$ & $0.9877f-0.0127$\\ $0.20$ & $0.9524f-0.0488$ & $0.9377f-0.0673$\\ $0.30$ & $0.8861f-0.1183$ & $0.8214f-0.2103$\\ $0.45$ & $0.7309f-0.2852$ & $0.4722f-0.7419$\\ $0.60$ & $0.5263f-0.5111$ & $0.1203f-1.3117$ \end{tabular}
+\
+\]
+A positive entry indicates it is rational to mine the transaction - the
+following table gives the breakeven values of $f$ necessary to mine the fee.
+
+\[ \begin{tabular}[c]{lcc} $p$ & $f^{\ast},k=2$ & $f^{\ast},k=5$\\ \hline $0.10$ & $0.0112$ & $0.0128$\\ $0.20$ & $0.0512$ & $0.0717$\\ $0.30$ & $0.1335$ & $0.2561$\\ $0.45$ & $0.3902$ & $1.5711$\\ $0.60$ & $0.9711$ & $10.9032$\\ \end{tabular} \]
+This is somewhat significant - if block reward is \$300,000, a 0.25 block reward fee
+represents a \$75,000 transaction fee.  This might not be a burden when
+moving an \$80 million transaction, but obviously not worth it for most
+day-to-day situations.
+
+\subsubsection{Case 2.  }
+
+Again suppose a non-compliant miner mines a block with fee $f$ (assume units in
+terms of the expected block reward) and a compliant hashrate $p$ tries to
+fight back with conceding deficit $k.$ But this time assume that some fraction
+$\gamma$ will side with the compliant miner when $d=0.$  This is rational
+because these miners are risking nothing by doing this (provided the pool who
+mined the original block is not sufficiently motivated to fight back), while
+they would risk a probability of losing any block that resets the state to $d=1$. We include tables below - see appendix for more formulas and derivations.  The $F$ and $f^{\ast}$
+tables use $r=0.1$.%
+\[
+\begin{tabular}[c]{lcccc}
+$W(1)$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $0.0302$ & $0.0338$ & $0.0576$ & $0.0643$\\
+$0.45$ & $0.3142$ & $0.5817$ & $0.3723$ & $0.6429$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcccc}
+$T(1)$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $1.1853$ & $4.8008$ & $1.1518$ & $4.6492$\\
+$0.45$ & $1.8080$ & $7.3823$ & $1.6548$ & $6.3021$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcccc}
+$C(1)$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $0.0752$ & $0.4267$ & $0.0444$ & $0.3771$\\
+$0.45$ & $0.1693$ & $1.1892$ & $0.0886$ & $0.8656$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcccc}
+$f^{\ast}$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $0.0314$ & $0.0359$ & $0.0618$ & $0.0705$\\
+$0.45$ & $0.4839$ & $1.8907$ & $0.6236$ & $2.3530$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcccc}
+$G(1),q=p/3$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $+0.0038$ & $-0.1066$ & $+0.0324$ & $-0.0672$\\
+$0.45$ & $+0.3731$ & $+1.0255$ & $+0.4078$ & $+1.0250$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcccc}
+$G(1),q=2p/3$ & \multicolumn{2}{c}{$\gamma=0.2$} & \multicolumn{2}{c}{$\gamma=0.5$}\\
+$p$ & $k=2$ & $k=5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $-0.0357$ & $-0.2667$ & $-0.0060$ & $-0.2221$\\
+$0.45$ & $+0.1019$ & $-0.0819$ & $+0.1596$ & $+0.0797$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcc}
+$F(1),\gamma=0.2$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $0.9698f-0.0305$ & $0.9662f-0.0347$\\
+$0.45$ & $0.6858f-0.3318$ & $0.4183f-0.7908$\\
+\end{tabular}
+\]
+\[
+\begin{tabular}[c]{lcc}
+$F(1),\gamma=0.5$ & $k=2$ & $k=5$\\ \hline
+$0.10$ & $0.9424f-0.0582$ & $0.9357f-0.0660$\\
+$0.45$ & $0.6277f-0.3914$ & $0.3571f-0.8402$\\
+\end{tabular}
+\]
+
+
+\subsection{Discussion and limitations}
+
+As we see above, it will be somewhat costly to the miners attempting the fork,
+especially if $p$ is small.  However, creating additional cost to
+non-compliant miners is the goal. Then again, if the costs to compliant miners are too
+high (see for example table (\ref{t4})), these miners will not be happy.  In
+particular miners will be motivated to find ways to avoid participating.
+ Short of mining non-compliantly, the miners can simply not mine.  Dragging
+one's feet when being forced to lose money against one's will is a rational
+response and it may lead to the censor giving up.  The censor then has to
+take extra steps to ensure compliance.
+
+The censor may want to subsidize the miners for participating somehow, so
+miners aren't stomaching all the risk - or find ways to increase their chance
+of success.  Success rates can be increased by the censor renting hashrate
+(see section \ref{erntal}) or deploying one's own, perhaps at inefficient
+costs. The possibility of a subsidy to miners is discussed in \cite[pg.
+15]{HW} where it is suggested this might \textquotedblleft initiate a
+public-relations firestorm''.  We think such a firestorm could be managed or
+balanced against other harms -- the US national security budget is gargantuan
+compared to any short term subsidy to miners, and it is certainly not uncommon
+for USG to subsidize industries for strategic reasons.
+
+As pointed out in \cite{HW}, US adversaries may invest in mining
+equipment to increase the probability that a feather fork will fail.  An extended arms race would
+likely be overall deleterious for Bitcoin - it is unattractive to hold
+value in a currency whose ledger is a battlefield.  In order for Bitcoin to remain
+globally valuable, and the US to maintain its ability to censor Bitcoin, most users
+must believe that the power to censor will be used only benevolently, only
+against ``the bad guys.''  The bad guys can only represent a small portion of
+future expected demand.  US Treasurys have long been a store of value for non
+US nationals who have no intention of angering the US.  US Treasurys are
+not bearer assets and property interests can and have been blocked for SDNs.
+ So certainly resistance to US censorship is not a necessary feature for
+something to be a significant international store of value.
+
+The risk of someone fighting back is real and very hard to
+quantify. An adversary may stockpile hashrate to preempt censorship - if there
+is an extended war following failed censorship attempts, most Bitcoin users in
+the US will be harmed. The censorship attempts would come with a poison pill
+that could devalue Bitcoin in general and would face backlash.
+
+Notice that if a pool itself is large and powerful, it may also fight back.
+ If the original pool had 40\% of hashrate and is willing to defend a
+substantial reward on their chain - the situation becomes more interesting -
+less existential than warring nation states but this could lead to more losses
+by compliant miners.  Further, coalitions of pools may opt to put short term
+competition aside and circle the wagons when facing a censorship attack.
+ A demonstrated commitment by pools to coordinate in the face of
+censorship may dissuade would be censors.
+
+\section{Fortifying\label{fort} the feather fork}
+
+There's a stronger version of the feather fork (beak fork?) in which the
+censor controls or is able to marshal over 50\% of the hashrate, but only
+deploys this when necessary to perform the reorg, which is then essentially
+guaranteed.  As discussed above, a minority of miners attempting a reorg runs
+a high risk of failure. Failure to consummate the reorg imposes significant opportunity cost and creates a
+drag on enforcement and enactment -- businesses will naturally resist being
+forced to lose money.  However, if additional hashrate is available - enough
+to actually guarantee the success of reorgs - the coerced miners will not be
+forced to lose money and the additional costs would be borne by the censor
+when deploying the expensive hashrate. The surety of such a reorg would
+make the use of the reorg infrequent in practice as rational miners should simply not
+mine blocks that carry near 100\% risk of loss.
+
+If the censor has the ability to bring more than 51\% of the hashrate online
+to use in an attempt to reorg a block, the best option is to openly declare this is
+their intention and follow this by demonstrating a willingness to follow through.
+ Even if the hashrate is expensive to use; the demonstrated commitment to
+the threat should keep it from being used at all.
+
+Ideally, the censor would start with some amount of hashrate directly under
+jurisdictional control, then take steps to make enough additional hashrate
+available to clearly exceed 51\%. There are essentially two ways to do this; stockpiling machines, or setting up
+avenues to spend heavily on the hashrate rental.
+
+For example, if you have 40\% of the active hashrate under your jurisdiction,
+and an amount of hashrate offline equivalent to 30\% of the active hashrate,
+bringing that online would give you 53.8\% of the hashrate (total after bringing it
+online.)  This should be enough edge to scare off any resistance, however,
+even at 54\% a short reorg is certainly not guaranteed; see section \ref{hoef}
+for more details and discussion.
+
+Stockpiling hashrate may not be entirely cost-prohibitive, depending on a
+buyer's patience, budget and timing: There are nowadays used hashrate markets on
+which older machines can be picked up quite cheaply-- because most of these
+machines cannot be used to mine profitably during normal operation - they can
+only be used when energy is near zero or negatively priced. So while the value
+of owning less efficient machines is positive, it is limited - one would
+imagine commercial purchasers of these machines would be outbid by a
+government with intention to acquire inefficient hashrate in bulk quantities.
+
+
+This is not simply a theoretical expectation - it can be observed in real
+time.  There is a massive delta in costs separating the competitive-tier
+efficient hashrate and older-generation ASICs (see estimates by Luxor \cite{hashrateindex2026asicprice}):  As of October 1,
+2026, the most efficient tier (under 14 J/TH) costs \$18.38 per TH/s while the
+25--38 J/TH range costs \$1.18 per TH/s.  Because competition causes
+breakeven margins to be small or negative for inefficient machines, those that
+are twice as efficient are worth 15 times more on the market.
+
+The more expensive part (for the censor) is likely then energy.  One
+strategy would be to set up warehouses of machines in many
+different geographic locations plugged in their respective grids. Setting up a very large (perhaps several GW) site on its own  would
+be a monumental waste of concentrated energy going nowhere most of the time and very expensive.  It
+makes more sense to set up dozens of warehouses of dormant machines around the
+country that can be fired up if necessary, possibly paying high grid rates on
+many grids over a short term. The objective, as with any expensive threat, is that
+you never have to use it.
+
+\subsection{Napk\label{stockpile}in stockpile math}
+
+Bitcoin's hashrate first crossed 100 EH/s in October 2019, and then crossed
+1000 EH/s in September 2025 -- this is very close to a double-every-two-years
+rate. After hitting 1000 EH/s, hashrate growth has leveled off - one year
+later it has failed to stay above 1000 EH/s.  One expects that
+the new hashrate being produced and deployed is still significant -- so one
+would expect that machines are being brought offline \cite{Zhao2026greatunplug}.
+
+\begin{figure}[ht] \centering \includegraphics[width=0.8\textwidth]{mm.png} \caption{https://labs.coinmetrics.io/} \label{fig:myfigure} \end{figure}
+
+
+Looking at data from Coin Metrics Mine-Match, we see that the total
+hashrate from more efficient machines is increasing while overall hashrate is decreasing: less efficient
+machines are being brought offline.  These machines can be grouped into four generations:
+
+\begin{itemize}
+\item Legacy ($\geq$75 J/TH): includes S9
+
+\item Gen 2 (45--75 J/TH): S17, M20S, M32, Avalon 1066, E12+
+
+\item Gen 3 (28--45 J/TH): A1246, S19, M50, S19j Pro
+
+\item Gen 4 ($<$28 J/TH): S19 XP, S21, S23.
+\end{itemize}
+
+We can't determine the numbers with precision, but it stands to
+reason that a significant number of older generation machines are going to be
+replaced by more efficient machines, especially given current hashprices (as
+of October 2026.) Naturally a machine with efficiency 75 J/TH is three
+times as costly (energy-wise) to get the same returns as a machine with 25
+J/TH.
+
+
+For a handy formula, the dollar-denominated energy yield of a miner with efficiency $\eta$ is given by \[ \frac{\$}{\mathrm{kWh}} =6\frac{P_{\mathrm{k}}R}{H_{\mathrm{E}}\eta}, \] where \begin{align*} P_{\mathrm{k}} &= \text{Bitcoin price, in thousands of dollars},\\ R &= \text{expected block reward, in units of bitcoin},\\ H_{\mathrm{E}} &= \text{network hashrate, in EH/s},\\ \eta &= \text{mining efficiency, in J/TH}. \end{align*} Thus, in October 2026, using \begin{align*} H_{\mathrm{E}} &= 980,\\ R &= 3.15,\\ P_{\mathrm{k}} &= 80, \end{align*}
+
+we get dollar revenue of \[ \begin{tabular}[c]{ll} Legacy & $\leq \$0.0206/\mathrm{kWh}$\\ Gen 2 & $\$0.0206$--$\$0.0343/\mathrm{kWh}$\\ Gen 3 & $\$0.0343$--$\$0.0551/\mathrm{kWh}$\\ Gen 4 & $\geq \$0.0551/\mathrm{kWh}$ \end{tabular} \]
+
+These machines are profitable to run only when the energy cost is less than
+the return.  All the numbers above are well below most residential rates in the US; in practice miners
+find arrangements to purchase power at prices within this range.
+
+Inspecting data from Mine-Match (see figure 1 above), the total
+hashrate of S19 variants probably peaked around 400--500 EH/s; these are being
+replaced by newer, more efficient machines.  If indeed the price of these
+machines is around \$1.18 per TH/s at scale, one could expect to acquire 300
+EH/s at the cost of \$355 million.  (Of course,  this is a rough napkin math extrapolation - one wouldn't expect
+the market to be this deep.)
+
+The S19 Pro produces 110TH/s.  So 300 EH/s is a little under 3 million
+machines.  If a warehouse holds 90,000 machines, this would require 30 such
+warehouses.  The power needed to run 300 EH/s in this efficiency range is on
+the order of 8--12 GW.  The US electrical grid, on average, consumes around
+450 GW average.  This 2\% would be a nontrivial bump in energy over the full
+grid and certainly not to be concentrated in one geographic
+area.  Supposing a power cost of \$0.10/kWh, 10 GW will cost \$1 million
+/hr or \$24 million per day to run.  This is expensive over a week, but
+over a few hours this is nearly invisible compared to other
+parts of the US national security budget, especially if only used occasionally.
+
+
+
+In 2026, one must also mention the huge new variable: opportunity costs for miners
+in the era of AI/HPC \cite{TEM2026unplug}.  As the demand for AI/HPC compute continues to grow, the opportunity cost of not pivoting to AI/HPC compute increases.  If we assume that the production levels of ASICs continue - within two to three years there could 
+be as much active hashrate as there is on the sideline (see \cite{Zhao2026greatunplug} for evidence this is happening in October 2026), offering a ripe
+opportunity for a censor to make large acquisitions.
+
+The argument here (with hand-waving and extrapolating trends and market prices) is that a sufficiently motivated entity may be able to spend, (to rough order of magnitude)  under \$1 billion to procure old ASICs.    If hashprice remains in the doldrums while new hashrate is purchased and new
+machines come online - it may become even more economically feasible to purchase
+old machines.  Getting the ASICs set up with electricity throughout
+the country is non-trivial - but not impossible.  Power Purchasing Agreements are very coveted in 2026 - but arm-twisting could jump a powerful party to the front of a queue. One can only speculate as to whether government purseholders would
+feel this allocation of power and money is prudent.
+
+There is also a much more aggressive option for a sufficiently motivated censor:  Purchase as much new equipment as possible as it is produced.  This
+is more expensive, but has the advantage that it would be more compact and
+less expensive to run, and may generate profits for the division running
+it.  If the most financed and active miners are foregoing Bitcoin ASIC
+purchases to chase AI/HPC, the cost need not be prohibitively expensive.
+ Mining is still a profitable business if done efficiently -- in fact the
+difficulty adjustment is designed so that some efficient miners will always be able
+to operate.  Thus a USG led mining operation could bring in money while
+serving as a weapon to perform reorgs.
+
+
+Another reason for the more aggressive option - skyrocketing revenues for data centers make electrical setup a scarce resource - while the older ASICs themselves could be cheap or even free, the electrical setup is the most expensive and faces the biggest economic bottleneck.  
+
+\section{Is 51\% actually decisive? \label{hoef}  }
+
+A government exercising censorial power over the network may cause
+significant disruption if they don't act cleanly and surgically.  This could backfire.
+
+The expression \textquotedblleft51\% attack'' is a reference to the
+mathematical fact that if one party maintains more than 50.0\% of the
+hashrate in an indefinitely extended race, they will eventually win the race,
+with probability 1.
+
+While mathematically true, this is certainly an overstatement of the practical
+certainty.  For example, an attacker with 51\% of the hashrate who is 5
+blocks behind and attempts to perform a reorg will wait on average 300 blocks
+before the reorg is consummated.
+
+The formula for computing this is easily derived from Wald's identity, so we
+present it here. Wald's identity says that if $X_{1},X_{2},\dots$ are independent random
+variables with a common finite mean $\mathbb{E}\left[  X_{n}\right]  =\mu$, and $N$ is a random variable
+taking values in $\{1,2,\dots\}$ with $\mathbb{E}\left[  N\right]  <\infty$ such that for every $n$
+\begin{equation}
+\mathbb{E}\left[  X_{n}1_{N>n-1}\right]  =\mathbb{E}\left[  X_{n}\right]
+P\left(  N>n-1\right)  \label{wald}%
+\end{equation}
+and
+\[
+\sum_{n=1}^{\infty}\mathbb{E}\left[  \left\vert X_{n}\right\vert 1_{N\geq n}\right]  <\infty,
+\]
+then
+\[
+\mathbb{E}\left[  \sum_{n=1}^{N}X_{n}\right]  =\mathbb{E}\left[  N\right]
+\mu.
+\]
+In this case let $X_{n}$ be the random variable which is $-1$ with probability
+$p$ and $+1$ with probability $1-p$. These independent variables correspond
+to the movement of the state variable $d$ denoting how many blocks the censor is behind in the race.  This is given at stage $n$ by
+\[
+d(n)=d_{0}+\sum_{i=1}^{n}X_{i}%
+\]
+where $d_{0}$ is how many blocks behind the censor is when game begins.  We assume the game
+stops at stage $N$ when $d_{N}=-1.$ We can check the condition (\ref{wald}),
+which essentially says that the variable $X_{n}$ has the same expectation
+provided we know that the game hasn't ended by step $n-1.$
+
+Now apply the result: Because $d(N)=-1$ with probability $1$ it follows
+that
+\begin{align*}
+-1-d_{0}  &  =\mathbb{E}\left[  \sum_{n=1}^{N}X_{n}\right]  \text{  by
+definition}\\
+&  =\mathbb{E[}N\mathbb{]E}\left[  X_{n}\right]  \text{  by Wald's formula}\\
+&  =\mathbb{E[}N\mathbb{]}(-p+(1-p))\text{ evaluating }\mathbb{E}\left[
+X_{n}\right]
+\end{align*}
+that is
+\begin{equation}
+\mathbb{E[}N\mathbb{]=}\frac{1+d_{0}}{2p-1} .\label{wf}%
+\end{equation}
+
+
+The takeaway is that if $p$ is only slightly above $0.5,$ the reorg is not
+guaranteed to happen soon.  Long reorgs are incredibly disruptive and trigger
+an entirely different game theory regime for Bitcoin.  We will return to this
+in section \ref{reorgs}.
+
+\section{Hashrate rental and pool operating\label{erntal}}
+
+While hashrate rental markets are available in a pinch, another option, probably best for large
+scale hash, is simply to run a pool - this can be profitable or break-even
+during standard operation and can be cranked up to win a race.
+
+In a basic economic sense the market for hashrate is simple.  Miners can
+point their hashrate at pools. Pools find blocks (through collective efforts
+of miners) and pay the miners a rate for their hash, minus a small fee.  Miners
+can be expected to sell their hashrate to pools that are paying the highest
+hashprice or near the highest hashprice.
+
+Smaller miners prefer to work with pools because most pools pay FPPS
+(Full-Pay-Per-Share).  When a miner signs up to work with a pool, the pool
+gives them a difficulty target commensurate with the miner's hashrate.  The miner is then expected to find hashes with this less difficult target at
+a somewhat frequent rate - say every 30 seconds or so. This way the miner can
+prove to the pool that they are hashing blocks.  The pools pay the miner a
+small amount for each of these partial proofs of work.
+
+In typical operation, the FPPS rate is determined by the expected hashprice
+in bitcoin - the difficulty is recalibrated every 2016 blocks and the
+transaction fees can be estimated. The pool skims a small percentage off this
+and returns a predictable flow to the miner.
+
+Most miners care very little about the contents of their blocks, and simply
+point hashrate to the highest bidder.  Thus in theory, if one pool or some
+other hashrate renter offered more dollars per hash, some portion of the hashrate would be
+directed towards the higher bidder.  It's unclear how big that portion of miners would be - the
+reality is that miners often have ideological or other reasons
+preventing them from simply selling their services to the highest bidder.
+
+
+From the censor's point of view, one would like the miners to
+believe that enough hashrate to perform the reorg will be purchased, thus it
+is advantageous to join the reorg as soon as possible. The more miners with
+this perspective there are, the less the censor has to pay, only reinforcing
+the inevitability of the reorg, creating a virtuous cycle working in the
+censor's favor.
+
+That is the rough picture - but in practice there are important issues.  If
+the censor has declared intentions to overpay, they may in fact be inviting
+reorg attempts as these could over time become lucrative for free-agent miners.
+ Similarly, miners may attempt to milk higher fee rates by not submitting
+blocks that would shorten or end the race, leading to much less decisive
+reorgs.  Some miners might even attempt to grief the censor by
+block-withholding, simply for ideological reasons, reaping both fun and profit.
+
+Moreover, it is unclear how many miners in pools
+are willing to switch. Ultimately the calculus will always depend on miners'
+willingness to bend towards the highest bidder.  If there is enough hashrate
+available to rent but not enough to be decisive - miners may be tempted to
+overcharge.
+\subsection{Block withholding\label{withholding}}
+
+Typically, the pool directs the miners to hash a block template, which the miner repeats gazillions of times and reports to the pool every time in which
+they find a hash below that miner's partial-proof-of-work target.
+ Occasionally, the hash will be below the full network target and the pool can claim
+the block.  Typically the miner who finds the block will be
+only paid for their partial share.  It may be possible for the miner to elect
+to not submit the block to the pool and simply discard it - this is a block-withholding attack, see \cite{Rosenfeld11}, \cite{Eyal15}.  This represents a
+massive loss to the pool (several hundred thousand dollars in 2026) but
+perhaps only a few cents or dollars lost to the miner.  There are different
+reasons to do this.  One scenario is when one pool is undercutting another pool on fees - the latter pool can send miners to collect FPPS from the
+former pool while withholding blocks - the net effect is that the former pool
+will be paying out more in FPPS than they are receiving in block rewards, and
+will be forced to raise fee rates to stay profitable.  Another reason is
+ideological.  If the pool is hoping to signal for a soft fork (these days
+there are pools with political agendas) a miner might be happy to cause that
+pool harm.
+
+Block withholding, from the pool perspective, is problematic in that it is
+difficult to detect - especially when perpetrated by any small miner.  An
+overly vigilant or suspicious pool who attempts to detect it on a large scale will
+occasionally also accuse smaller miners in false positives.
+
+Some math is in order. Suppose, for example, that an individual miner has
+0.1\% of the hashrate.  They expect to find a block roughly once a week.
+ Suppose a pool is paying 100 miners of this size, for a total of 10\% of the total hashrate.
+ Finding a block is a Poisson process, and follows the rule that if the
+miner's expected time to find a block is $T$, then after $T$ blocks there is a
+$\frac{1}{e}$ probability that they did not find a block.  So if 100 miners
+are mining honestly with 0.1\% of the hashrate each, around 37 will not have found
+blocks after 1000 blocks are found by the network.  After 2000 blocks have
+gone by, 13 of the 100 are expected to not have found blocks.  After 3000
+blocks (roughly 3 weeks) one expects that around 5 of these are yet to find
+blocks.  Only after several more weeks can the pool confidently single out
+such a miner as a likely block withholder.  This assumes that the miner is
+withholding all blocks.  The miner may actually be withholding every other
+block or 2 out of 3 blocks - still creating large revenue loss for the pool. This
+underperformance can be detected only over a longer period of time or across many miners. If the
+block withholding all occurred during a signaling period or a reorg race, this
+time window might not be large enough.
+
+On the other hand, consider a miner with 1\% of the hashrate. After one week, the likelihood of
+them not finding a block by chance is somewhat tiny - roughly $0.004\%$.  An
+important takeaway is that a miner on the order of 1\% of the total hashrate
+could be detected if they engaged in significant block withholding over a
+period of weeks, whereas a miner with 0.1\% could get away with it much longer
+-- not only is the threshold for detection harder, but there's a higher
+likelihood of false positives because there would be more such smaller miners.
+
+For this reason it is preferable for a pool to deal with larger miners.
+ A hashrate renter, especially for shorter term reorgs, should focus on
+securing larger miners.
+
+\subsection{Running a pool and proportionally overpaying larger miners}
+
+We suggest the following approach for the censor concerned with withholding.
+ The censor operates a pool with competitive fees (perhaps break-even or
+slightly net-negative fee rates) in order to attract a large portion of free
+agent miners.  During a reorg attempt, the pool then pays a larger amount,
+say a multiple
+\[
+1+a
+\]
+of the hashrate.  Then the pool computes a function $\delta(d)$ which
+determines the change in expected length of the reorg war when a miner mines a
+block for the censor and moves the state from $d$ to $d-1.$  The pool then
+offers a \textquotedblleft finder's fee'' reward for a full block of
+\[
+b\delta(d)h
+\]
+to the miner.  Here $h$ is the proportion of the hashrate belonging to that
+miner.  The miner who finds a block can either submit it or discard it;  By
+submitting it, they are perhaps shortening the race, which decreases their
+expected rewards by $a\delta(d)h.$  For $b>a$ the reward is higher for
+submitting the block.
+
+Note that because the miner's share of extra revenue during the reorg is
+proportional to their size, it makes sense that the fee to encourage them to
+submit should also be proportional to their size.  This has an added
+benefit: miners can prove they are large but not that they are small, and now they have an incentive to do so.
+ So by incentivizing larger miners to declare their size (and back it up
+with FPPS shares) it is easier to detect when they are withholding. Larger
+miners are rewarded more proportionally (essentially the finder's fee is
+quadratic in miner size) which is more inviting to larger miners, thus resistant to block-withholding.
+
+The problem with overpaying is that miners enjoy it, and unless
+the incentives are set up correctly, miners may work to maintain the race
+situation for as long as possible.
+
+We should ask when this can be exploitable or misaligned. First we make an
+obvious observation: there are values of $a$ that are too large and should be
+avoided. If a censor expects that 60\% of the hashrate will
+help join the reorg effort, Wald's formula (\ref{wf}) yields that the expected duration
+of a reorg war is 10 blocks.  So a miner with 15\% of the hashrate will gain
+an expected value of at least $0.15\ast a\ast10$ each time the reorg attempt
+happens. If this number is larger than $1$, it is rational for the miner to
+trigger the reorg intentionally, forfeit the block and expect to net $(1.5a-1)$
+blocks over the course of the reorg.  This is without factoring in the
+additional finder's fee rewards,  which will also be lucrative.  Thus unless the
+censor can count on $p$ somewhat larger than 50\%, this might leave the censor
+vulnerable to exploits.
+
+There is some calculus involved in choosing $a$ and $b.$  When $a$ is large more
+miners will join (the exact slope is unclear a priori) which increases the
+success of a reorg and decreases the expected time. 
+ However $a$ too large may encourage triggering the reorg.  This calculus depends crucially on curve describing miners response to being
+paid more to join the reorg attempt, and also depends on the miners' beliefs about how many blocks they can withhold without being detected.
+Define 
+\[
+h^{\ast}=\left(  1-\frac{a}{b}\right)  (2p-1).
+\]
+The following proposition says that if a miner in the pool has hashrate larger than $h^{\ast}$, there is some positive amount of block withholding that they are incentivized to do.  In particular, when $2p-1$ is not large, this is not something that can be fixed by a larger value of $b$.  The proof is Appendix \ref{app:withhold} .
+
+\begin{proposition}
+\label{prop:withhold_maintext}Suppose a pool expects a fraction $p>\frac{1}{2}$ to joint a reorg attempt and a participating
+miner with hashrate $h$ withholds a fraction $q\in\lbrack0,1]$ of the blocks
+they find.
+
+\begin{enumerate}
+\item If $h<h^{\ast}$, the miner's best option is to publish all blocks.  
+
+\item If $h^{\ast}<h $ there is an optimal fraction $q$ of blocks they should withhold which is strictly positive.  The precise value depends on their beliefs about increasing likelihood of penalties for getting caught.  
+
+\end{enumerate}
+\end{proposition}
+
+When the expect fraction of miners  $p$ is less than $0.5$, the situation becomes somewhat complicated to model. With $k$
+small, the race will be over sooner, however, this means fewer opportunities
+for detection of block withholding.  Miners will aim to keep the race going
+as long as possible, withholding some blocks while publishing some blocks to
+reap the higher rewards.  If there are several larger miners joining to
+reap the benefits, they may or may not collude.  For example, two miners
+could pay each other for discarded blocks, as both benefit from the
+opportunity provided by the extended race.
+
+Again the censor's goal is to create a credible enough threat to miners so that miners
+will forgo the fee for mining the censored transaction.  Immediately we can
+see this can backfire here if the calculus is not careful-- a miner who
+expects more rewards by supplanting his own block can mine the offending
+transaction on purpose, and with less than 50\%, this transaction may survive.
+ This can be a win-win for non-compliant miners, and a lose-lose for the censor.
+
+\subsection{Safety in FPPS: an \label{fppssafe}advantage of running a
+pool during a race}
+
+Note that a race always provides risk for any miner or any pool that is not
+paid through FPPS, in particular if the outcome of the race is unclear.  If
+the censor is running a pool and paying FPPS, this works to their advantage --
+by opting for FPPS payment the independent miner does not risk losing a
+block.  Any pool operator that might lose faces this risk, which in turn may
+force them to offer lower fees, again working to the censor's advantage. So
+during a race, hashrate could accrue to pools, and more heavily to the pool
+that is paying the most.
+
+Here we see a basic principle that the censor has in their favor - they are
+relying on economic incentives external to the blockchain ecosystem. In particular the censor is fine with losing some money, whereas a pool operator that makes money as a
+pool operator must stick to economic objectives when making decisions.
+
+\section{Ramifications\label{reorgs} of reorgs}
+
+The rules of Nakamoto Consensus do not prohibit a powerful entity like USG from directing it to their own ends, but how Bitcoin would respond to this is an open question.
+ It was generally received wisdom in Bitcoin's first decade that any
+powerful figure exercising such control would represent the consummate
+failure of the Bitcoin experiment.  In fact in 2014 when a single mining pool
+ghash.io approached and slightly exceeded 50\% of the hashrate, the price
+slipped and prominent Bitcoin developer Peter Todd announced on reddit that he
+had sold Bitcoin in response.  The pool quickly shrunk back to below 50\% -  but it has since been
+enshrined in the lore that any entity even positioning to wield 51\% control
+over the network would cause Bitcoiners to abandon Bitcoin en masse.
+
+This Market Fragility Hypothesis in \cite[Chapter
+10]{Warren23} has served as a pillar of Bitcoin's resistance to takeover
+since the early days -- essentially a poison pill.  Anybody who tries to commandeer
+Bitcoin will find they have won a worthless prize.
+
+However, this should be challenged in 2026 and beyond.  Bitcoin has
+experienced major institutional demand from players who do not care if the US
+develops the ability to censor some transactions. A large portion of the
+economic activity is through law-abiding, fully KYC'd corporations and
+individuals.  Bitcoin presents to many as a Schelling point; an agreed-upon finite supply store-of-value asset, which can be transferred digitally quickly anywhere around the
+world. For many this is sufficient to regard as a useful asset.  A government encouraging miners to
+reject transactions by terrorists does not change the 21 million supply cap,
+nor the law-abiding citizen's ability to transfer the coins. Many coins are
+held in ETFs or custodial accounts that could be confiscated anyways, if the
+account holder were to misbehave.
+
+\subsection{How would the network respond to a censor?}
+
+We expect that the censor's goal is not to damage the network - this would destroy both leverage and goodwill among law-abiding users.  If the
+censor's actions are disruptive, the community may be forced to take
+extra-protocolar action to eject the censor from the consensus process.
+
+The goal of any consensus mechanism, at the end of the day, is consensus.
+ Consensus is necessary for a payment system to operate - we must have some
+clear idea of who owns what at any time.  There is some small amount of fuzziness for
+recent transactions inherent to Nakamoto Consensus - since the early days of Bitcoin it was considered
+prudent to wait several blocks before concluding that a transaction is
+confirmed.  This is often described as probabilistic finality - a
+transaction that just was confirmed has a very small chance of being
+rewritten, whereas a transaction written onto the blockchain weeks ago has a
+near infinitesimal chance of becoming non-canonical.  This is sufficient for
+most users.
+
+However, if longer reorgs were to occur with any frequency - the window of
+uncertainty would widen to the point where Bitcoin becomes less attractive as
+a currency.  Any reorg can indirectly lead to a ``purge attack'' \cite{hasu2020purge} - a reorg
+longer than the usual confirmation window which allows many users an
+opportunity to respend coins they already spent.
+
+The Bitcoin network would be forced to do something if there were repeated
+longer races, as this degrades usability.  One option is that a
+loose, perhaps unofficial group of sentinels watch the chain for reorgs, and
+when they identify a pattern of come-from-behind reorg attempts - they would
+send out a message to invalidate these blocks.  Bitcoin Core ships with
+\texttt{invalidateblock} - so such a manual override of the heaviest chain rule is
+technically possible.  Another option is checkpointing - if a block appears
+and many blocks are built on that, it can be declared ``canonical'' by some
+trusted party or committee.
+
+Now this might seem out-of-character or to be ``breaking the rules'' of Bitcoin - it is -
+and there are obvious risks and downsides to such extra-protocolar arrangements. But this is a
+choice between accepting censorship by a 51\% majority (technically Bitcoin,
+but not the version early Bitcoiners signed up for) and empowering a few individuals to agree on
+an obvious thing. In spirit Bitcoin is \textquotedblleft rules without
+rulers'', but when rules lead to unwelcome rulers, it makes sense to break the
+rules.
+
+The aversion is healthy.  Any system relying on human judgments presents challenges Bitcoin was designed to avoid.  Similarly, any checkpointing can be abused skillfully by an
+attacker who is trying to brick the network. For example if checkpointing is fully
+automatic, a sufficiently well-resourced attacker can split the network by
+broadcasting blocks at the right time in order to cause an irreconcilable chain split,
+see \cite[Chapter 13]{Warren23}. However, this is more likely to cause a
+problem when an attacker has an overwhelming majority of hashpower - and can
+be worked around if the attacks are not powerful and less frequent.
+
+If the network is frequently out of consensus,  mechanisms should evolve to
+fix this.   A would-be attacker or censor must consider not only the
+local calculus and game theory of odds for a particular reorg attempt but
+also the larger-scale game theory - if the censor is disruptive and poses an
+existential threat, the network will close ranks to eject the censor.  An
+additional layer that invalidates blocks seems against the spirit- but this is a
+simple addition that doesn't need to be used all the time.
+
+\subsection{Tougher question: who controls Bitcoin?}
+
+If stakeholders in the Bitcoin network are interested in repelling
+censorship, they could devise a response, even if somewhat loose.  If major
+stakeholders indicate that they have the ability and willingness to coordinate to reject a threat (essentially
+going outside protocols and norms as described above), a would-be censor should take note.
+
+But who are the stakeholders who could wield such power?  These are often
+described as \textquotedblleft the economic nodes.'' (This term contrasts with
+the users who are running nodes which distribute and verify
+transactions while not making large transactions themselves.)   If a decision is to be made about how transactions are to be processed in
+the future, in particular if a new set of rules is to be enforced, the most
+important thing is that a significant portion of the economic activity agrees and goes along.
+Ultimately one could argue the economic nodes control Bitcoin, or at least
+have either proactive or veto power enough to determine changes.
+
+It follows that if a censor wants to use reorgs to exert
+influence on Bitcoin while short of an overwhelming  hashrate majority - and if
+the economic nodes largely disapprove of this, it will be possible for the
+network to circle wagons and eject the censors.  It follows that a censor who
+wants to censor the network should first ensure they either have direct control over or are aligned with the economic players.
+
+This leads to a more direct question - if a censor wants to censor and can
+count on cooperation from economic nodes, why not go to the economic
+nodes and exploit them directly?
+
+\section{Censorship via\label{taint} institution adoption}
+
+If the censor's main tool in preventing transactions from hitting the chain is reorgs, this is an effort
+that has to be waged block after block, forever into the future and is costly and disruptive
+to the consensus itself. We suggest another way: leveraging the economic
+power of institutions under the censor's jurisdiction.
+
+Suppose there is large scale institutional adoption of Bitcoin in your
+jurisdiction.  We suggest leveraging this as follows.  Use the UTXO
+structure of Bitcoin to implement a hereditary taint. Transactions known to be spendable by discountenanced entities are put in a
+taint list.   After this list goes live, any transactions with
+any input from these transactions are also added to the taint list and so
+forth.  If any institution in your jurisdiction comes into possession of a
+tainted coin, they are directed to 1) turn the coin over and 2) ensure
+nothing of value was given to the sender in exchange for the coin.
+
+A common response is that this would be difficult to implement.  Indeed, proposals involving tainting transactions downstream of OFAC transactions have been
+swiftly dismissed - based on the observation that such a taint would apply to most recent transactions.   Since exchanges
+outside the US have largely ignored the OFAC list, many coins have been mixed and
+are now pervasive everywhere. Note that OFAC has been adding Bitcoin addresses since 2018 \cite{OFAC2018SamSam} but enforcement at scale is challenging.
+
+This is why we suggest a new and deliberate approach.  Begin with a fresh list
+of transactions, which initially would be limited to certain addresses,
+including addresses
+involved in terrorism, hacking, pig-butchering and other crimes that have been targeted
+by US law enforcement.  Announce the existence of the list (although not the contents) well ahead of time and allow
+exchanges, wallet providers and the rest of the industry to prepare.
+
+\subsection{The transaction graph is easy to track}
+
+What makes a taint possible is the legible structure of Bitcoin transactions
+-- every new transaction has inputs and outputs. The structure is based on the
+concept of UTXO (unspent transaction output): each transaction output can be spent
+only once -- spending the UTXO eliminates the transaction output and replaces it with
+one or more new UTXOs, each of which includes that spent output in the set of inputs.
+ So Tainting Rule \#1 is easy: The outputs of any transaction with a tainted input is tainted.
+
+In practice many nodes verifying the Bitcoin protocol simply forget spent
+transactions -- as a transaction output can only be spent once, there's no need
+to keep it in memory when it is spent -- you can simply keep a list of valid unspent
+outputs.  This is what makes tainting easy; nodes need only maintain two
+bins of unspent UTXOs; tainted and clean. When a new transaction is created,
+part of the validation process of the node is to confirm that it sources from valid
+UTXOs - if all the input UTXOs are clean, it goes in the clean bin, while if any are
+dirty, the new UTXO goes in the dirty bin.
+
+The blockchain is large, but tiny by comparison to most modern datasets.
+ Building a graph of tainted transactions starting from a small number is
+straightforward.  In fact, the Ordinals protocol developed in 2022 by Casey
+Rodarmor, essentially tracks every satoshi forward in time.  This is an already existing
+overlay application on a Bitcoin node and does far more than is
+necessary to track a taint list -- the taint list is simpler and more
+permissive, which makes tainting a much more simple task to implement than
+ordinal tracking.
+
+\subsection{How it would work in practice}
+
+In practice, a Taint Office would maintain an API that would be updated
+continually (perhaps updated predictably within a few seconds of each new
+block) and that could be queried at any time. The blockchain is always online
+and nodes are always in communication so this is not an unreasonable
+assumption.  Any node that chooses to can keep and share this data.
+
+Bitcoin Core is an open source project: it can easily be forked or overlaid to
+add this functionality.  A node operator has the choice to
+participate or not - the idea is to make it rational for them to participate.
+
+Wallet software is similar: A wallet could choose to incorporate the list, or
+at least give the user the option of incorporating this.  If a user receives
+an incoming transaction, the wallet would immediately flag it as tainted or valid, and
+quarantine tainted transactions from others, so as to not contaminate the clean UTXOs.  It is then
+up to the recipient to tell the sender that their transaction is not going to
+be treated as Bitcoin.
+
+This is not without edge cases. For example, a transaction could be included in a block very
+shortly after the parent is included in the taint list.  In this case, the
+taint on the new transaction could either be lifted or maintained.
+ Maintaining the taint may allow the office to do some preliminary
+investigation before lifting the taint. For example, if the new transaction
+was sent to an exchange before the exchange determined it was tainted, the
+exchange can simply not honor any credits given to the tainted party. An
+honest, law-abiding recipient could rehabilitate the transaction by turning over
+information they have about the sender to authorities.
+
+Generally speaking, the information that a transaction is tainted could be
+spread almost as quickly as any other transaction that propagates over the
+network, so it would be reasonable to expect those that are accepting bitcoins
+as credit for something to be able to check in real time if the transaction is
+tainted.  As a backup a sub-second API call should suffice.
+
+\subsection{Tainting breaks fungibility and creates a lesser coin}
+
+The objective is to make the coin effectively unspendable - meaning the holder
+cannot exchange the coin for anything of value, including other coins.
+ Certainly the coin is not depositable at any US-domiciled exchanges - the exchange
+would simply pass the deposit on to the USG and not credit the sender.
+ Because the taint can spread to combined transactions, overseas exchanges
+would be wise to quarantine tainted deposits.  Anyone who believes they may end up spending their coins with a US entity must make sure their UTXOs are clean.  In turn, they will insist that any
+exchanges they deal with keep clean coins separate.  It will become clear immediately
+that every institution globally has reason to keep the two types of Bitcoin in
+completely separate wallets.
+
+The market for tainted Bitcoin is strictly smaller. If there is large demand
+by US institutions for Bitcoin, there will be a significantly less demand for tainted Bitcoin. Overseas
+institutions that deal in both would maintain separate markets which would
+reflect the lower price.
+
+As soon as tainted bitcoins begin to be traded at exchanges, fungibility will
+be broken and there will be two Bitcoins.  This is the goal.  Note that the
+price for clean Bitcoin will never be lower - anyone can mix clean Bitcoin
+with dirty to make it dirty, but not vice versa, so the supply of potentially tainted coins always majorizes the supply of clean.
+
+\subsection{Dusting is only a problem if your wallet chooses not to address it}
+
+A potential pushback is that this leaves some wallets vulnerable to dusting.  This is
+possible if the users aren't careful, and are targeted by dusters. A sanctioned party may choose to ``dust'' innocent users by
+sending very small amounts to many addresses, in hopes that they will
+include this dust in future transactions to honest parties who will fail to flag
+their transaction and be also caught up in the taint. The attackers' goal
+here is to make the taint unworkable and unpleasant for honest
+parties.
+
+However, wallet software should be able to easily separate the tainted
+transaction so that these are never included.  Remember that unlike, say,
+Ethereum, which uses an account-based system, Bitcoin uses UTXOs which
+can be explicitly ignored and excluded from a transaction graph by the wallet
+software.  Further, even if the user accidentally combines tainted coins into a
+transaction, the receiver can flag this and communicate to the sender - if caught in time,
+the sender can replace the transaction with a higher fee transaction that
+doesn't include the tainted transaction (a move often called RBF, provided the wallet allows it.)
+
+Extra requirements for wallet software could create pushback; any wallet provider who wants to protect the user from dusting must add functionality.
+ Of course, the user gets to choose their wallet software and may gravitate
+towards those who offer this if they wish to avoid tainted transactions.  So
+we expect that economic considerations would address this.
+
+Of course, some wallets will be resistant to participation in censorship,
+which is antithetical to Bitcoin's core principles, and some users who share
+this ideology will choose these wallets.  Inevitably some will be caught in
+the taint.  This is why we recommend a slow deliberate roll out -- at some
+point some users will find their coins are not accepted and others will have
+plenty of time to take prudent steps to elevate their hygiene.
+
+\subsection{Rollout}
+
+We suggest working in several stages.
+
+\subsubsection{Stage 0. Announcement.}
+
+ First announce clearly that this will go into effect at some future date
+or block number (say block $T_{0}).$  Publish software forks of Bitcoin Core
+and allow wallet providers to add the functionality required to bin UTXOs into
+clean and dirty.  Publicize the API.
+
+\subsubsection{Stage 1. Go live.}
+
+When the block $T_{0}$ happens, immediately announce a handful of UTXOs that
+are tainted.
+
+Naturally some of the holders will attempt to spend these or send to an
+exchange.  If they spend at a US institution, the institution now has the
+opportunity to confiscate the coins and demonstrate that the taint works.  If
+the holders spend at an overseas exchange, the exchange is wise to separate
+the incoming UTXO and credit their account with a new type of coin tradable on
+a new market. If the holder sends it to themselves, the API will immediately update the
+list.
+
+\subsubsection{Stage 2. Coins are traded on DeFi.}
+
+There are naturally occurring mechanisms that will hasten the
+fungibility-breaking.  THORChain is a DeFi protocol that exchanges coins
+across chains at decentralized market prices - the price is determined by the ratio of the two assets in each liquidity pool.   A Bitcoin-to-RUNE
+transaction involves an amount of bitcoin being deposited in a THORChain
+vault, which releases some RUNE to the depositor, in turn raising the ratio of bitcoin to RUNE in the BTC/RUNE pool, effectively lowering the price of Bitcoin.  Before $T_{0}$
+one would expect the usual market exchange rates to hold -- deviation from market rates can be easily arbitraged.  
+
+However after $T_{0},$ it would make sense that holders of tainted Bitcoin would deposit this into Bitcoin vaults and receive clean RUNE in
+return.  At $T_{0}$ they should initially get clean Bitcoin market prices.    The motivation is clear. Almost immediately, tainted coin
+users dumping coins into THORChain vaults (hoping to front-run others with the
+same idea) would crater the price determined by THORChain's decentralized mechanism. Thus in a matter of hours a price for
+tainted Bitcoin could be established well under the market price of Bitcoin.
+ This would anchor the price to a small fraction.
+
+Once the DeFi markets establish a new price, we would expect foreign exchanges
+to follow and list both coins as separate units for trading pairs.  At this
+point fungibility is broken and the taint is locked in.
+
+\subsubsection{Stage 3: Tainting coinbase transaction}
+
+Here we suggest waiting some amount of time while the taint is established.
+ Perhaps a year. Miners are allowed to confirm transactions.  The market
+will clearly have demonstrated that the coins are worth significantly less.  The
+next step is to add a new taint: The coinbase transaction of any miner
+including a tainted transaction in a block.
+
+Now every miner has to make a choice, include tainted transactions or not.
+ If the miner is in the US, this is off the table - not really a
+choice, as the rules would force them to immediately surrender their own coinbase rewards. Elsewhere the miner takes the hit with a lower exchange rate on the block subsidy and all the
+fees.  Given current fee rates compared to block subsidy, it would require a
+significant amount of fees to make up the difference between the value of a
+clean and tainted block subsidy.
+
+Once this is implemented, tainted transactions will be slow to confirm, they
+will only confirm when there are many of them paying a high fee. This accelerates a vicious cycle: as the tainted
+coins become less valuable, they become less easy to spend (higher fees and
+less frequent blocks), which in turn makes them even less valuable.
+
+\subsubsection{Stage 4: Nail in the coffin}
+
+After the value of coins is sufficiently diminished, implement a final step:
+ Any block which immediately builds on a block mining tainted transactions
+will have tainted coinbase transactions.  Thus blocks which mine tainted
+transactions are likely to be completely ignored, unless there is a large
+backlog of high paying tainted transactions.  Repeat if necessary.
+
+\subsection{Now you have a powerful tool}
+
+Effectively, the ability to taint Bitcoin would be a zap-button  which should be feared by anyone
+who holds Bitcoin around the world. Anyone who disappoints the US
+can find their Bitcoin is rendered immediately worthless.  This is ultimately
+a goal of sanctions.  With enough intelligence about who-owns-what, this
+would be a major step in preventing adversaries from avoiding sanctions using
+Bitcoin.
+
+There could be other benefits.  Hackers hoping to abscond with large
+quantities of bitcoin (no shortage of these examples in the second half of 2026 as open AI models become more capable at finding exploits) 
+ could be stopped in their tracks.
+
+A rogue attacker who develops a quantum computer to spend Satoshis' coins
+would effectively have to gain the favor of the US government to pull this off --
+if USG decides these coins pose any sort of a threat, even of market
+destabilization, the coins can be tainted.
+
+A later stage could deal with retroactive use when it appears that overseas
+exchanges are not making good faith efforts to avoid assisting criminals.  If
+an exchange immediately launders and mixes in hacked or stolen funds on a
+regular basis, we could retroactively add these coins to a
+taint list, spoiling the exchange's vault and making them a pariah.
+
+In fact, if a retroactive taint is used, some sort of market-based credit
+scoring or insurance should emerge -- exchanges that deal with shady customers
+must be extra careful to keep funds separated, or may elect not to deal with shady
+customers at all.
+
+
+\subsubsection{A remark on CoinJoins and Lightning}
+
+Note that CoinJoins need not be tainted -- users engaging in a CoinJoin can see
+the inputs before signing - thus can refuse to join a tainted pool.  So users who coinjoin for innocent privacy
+reasons can continue to do so without fearing taint, as long as they have a
+wallet which protects them.  If tainted coins repeatedly cause CoinJoins to fail -- coordinators will be encouraged to disallow them.  In fact, there is precedent for this, see \cite{coindesk2022wasabi}.
+
+The Lightning Network should remain largely unaffected as long as users
+maintain basic hygiene in choosing channel partners. Some examples are in order:
+
+Suppose that a known tainted input attempts to partner with a clean input who
+maintains a node on the larger Lightning Network.  The goal would be to drain
+all the liquidity out of the tainted UTXO and into some purchase or output to
+some newly created clean output, which is also on the Lightning Network.
+ This may work, but we should look at the incentives for the channel
+partner.  Clearly any input they cash out is then tainted.  If the tainted
+UTXO joins a channel with a clean node, and brings 1 BTC of liquidity, they
+would hope to send this to the clean partner, who would forward 1 BTC further
+into the network from their own balances on other channels. This is entirely a
+bad deal for the partner - they have agreed to accept tainted BTC (if the
+channel is ever closed, that's what they receive) -- any partner paying
+attention to their counterparty would never form such a channel.
+
+ There is also the possibility that an active channel (which is itself a
+multisig UTXO) could be tainted. Now either one or both parties are
+connected to the larger network, both would like to choose payments that
+maximize the value in their clean UTXO (coming in from other channels) while
+minimizing the value in the tainted UTXO.  But since both parties are trying
+to send payments through to the other, neither are willing to accept payments
+across the tainted channel, so the channel will be essentially dead.  The
+exceptional situation is when the channel has quite a lot of bidirectional
+through traffic - both parties can agree to accept transactions back and forth
+while slowly accumulating fees in clean channels - in this case the tainted
+Bitcoin can continue to function as liquidity, although still cannot be cashed
+out or exchanged for clean Bitcoin.
+
+There is an important variant of this.  If a bad actor partners with a clean
+actor on the edge of the network before being discovered, they may immediately
+attempt to push all the Bitcoin through before they are discovered - dumping
+it into some clean address elsewhere on the network.  Then suppose the bad actor is
+identified and the channel is tainted.  The clean holder now has all the
+liquidity and can only cash out tainted Bitcoin and realizes they were taken
+advantage of.  This presents a clear vulnerability for those who choose to
+partner with shady characters - if your partner turned out to be shady, you
+can get stuck holding their less valuable bags.
+
+The incentives in this scenario lead to a more reputable Lightning Network.
+ If you assume the risk of anyone you partner with - you will be more careful
+and perhaps perform due diligence before accepting their liquidity, Thus the ability to taint a
+lightning channel aligns well with the censor's interests.  It may even
+encourage partners to proactively close channels if they feel the counterparty
+is engaging in behavior that might result in a taint.
+
+\bigskip
+
+\section{Use of AI}
+
+All of the text above was written by the author, with the exception of tables and minor typo-editing, which was performed by Claude.  
+
+The analytical computations in the appendix are grounded in work the author
+described in a 2023 book \cite{Warren23}. The author described the methods to Claude, who then carried out the
+symbolic computations and typeset the appendix.  
+
+The numerical tables in Section~\ref{feather} and in the appendix were
+generated by code written by Claude. The closed-form expressions for the
+feather-fork races were checked against an exact solution of the underlying
+Markov chain and against Monte Carlo simulation. The withholding formulas were
+checked against Monte Carlo simulation. The code will be made available in a
+GitHub repository.
+
+
+\bigskip
+\bibliographystyle{plain}
+\bibliography{censor}
+
+
+\appendix
+
+%% appendix_feather.tex -- finite-difference appendix for the feather-fork model
+%% Intended to replace the old appendix sections ``(untitled)'', ``Case 1'' and
+%% ``Case 2'' of Oct5.tex via \input{appendix_feather}.  Keeps the labels used
+%% in the main text (Awin, fullT, eyecandy, G_app) and WaldT (used in the withholding section).
+%% Every number in this appendix is produced by feather_tables.py, which checks
+%% the closed forms against an exact solve of the Markov chain and Monte Carlo.
+
+\section{Feather-fork races as finite-difference problems\label{app:race}}
+
+
+Note: The following discussion is somewhat advanced and was generated by Opus 5.5. Readers seeking a gentler introduction may wish to consult \cite[Chapters 5--6]{Warren23}
+
+\subsection{Set-up}
+
+The state of a race is $d\in\{-1,0,1,\dots,k\}$, the number of blocks the
+compliant chain is behind. The race starts at $d=1$ and ends when $d=-1$ (the
+compliant chain wins) or $d=k$ (the compliant miners concede). One step of the
+process is one block. We assume only two chains compete and nobody withholds
+blocks, so every block moves $d$ by exactly $\pm1$: the compliant chain finds
+the next block with probability $\pi(d)$, moving $d\to d-1$, and otherwise
+$d\to d+1$.
+
+\begin{itemize}
+\item \textbf{Case 1.} All miners outside the compliant group (hashrate $p$)
+follow the first-seen rule, so $\pi(d)=p$ for all $d$.
+
+\item \textbf{Case 2.} A fraction $\gamma$ of the hashrate outside the
+compliant group joins the compliant chain while the chains are tied ($d=0$).
+Then
+\[
+\pi(0)=P:=p+\gamma(1-p),\qquad\pi(d)=p\quad(d\geq1).
+\]
+Setting $\gamma=0$ recovers Case~1.
+\end{itemize}
+
+All payoffs are in units of one block reward. We compute five quantities,
+each as a function of the starting state $d$; the main text uses $d=1$.
+
+\begin{center}%
+\begin{tabular}
+[c]{lp{0.8\textwidth}}%
+$W(d)$ & probability that the compliant chain wins\\
+$T(d)$ & expected number of blocks mined before the race ends\\
+$C(d)$ & expected number of race blocks mined by the compliant group that are
+orphaned\\
+$G(d)$ & expected surviving compliant-group race blocks, minus operating cost
+$q$ per block\\
+$F(d)$ & payoff to the miner (hashrate $r$) who included the forbidden
+transaction
+\end{tabular}
+\end{center}
+
+\noindent For $F$, the comparison is with having left the transaction out
+(and so having no race at all). If the non-compliant chain wins, the miner
+gains the fee $f$. If the compliant chain wins, the miner loses the block
+($-1$) and also every block they mined on the non-compliant chain during the
+race. For $C$ the comparison is with mining the chain tip, and for $G$ it is
+with switching the machines off for the duration of the race.
+
+\subsection{One lemma for all five quantities}
+
+\begin{lemma}
+\label{lem:firststep}Let $d_{0}=d,d_{1},d_{2},\dots$ be the race, $\tau$ the
+step at which it ends, and
+\[
+V(d)=E_{d}\Bigl[\sum_{t<\tau}\rho(d_{t},d_{t+1})+\Phi(d_{\tau})\Bigr]
+\]
+for a step reward $\rho$ and terminal payoff $\Phi$. Then $V(-1)=\Phi(-1)$,
+$V(k)=\Phi(k)$, and for $0\leq d<k$%
+\begin{equation}
+V(d)=\pi(d)\bigl[\rho(d,d-1)+V(d-1)\bigr]+\bigl(1-\pi(d)\bigr)\bigl[\rho
+(d,d+1)+V(d+1)\bigr]. \label{firststep}%
+\end{equation}
+Moreover, a reward $R$ paid at step $t$ \emph{only if the race eventually ends
+with the compliant chain winning} may be replaced by the deterministic step
+reward $R\,W(d_{t+1})$ (and by $R\bigl(1-W(d_{t+1})\bigr)$ if paid only when
+it loses), without changing $V$.
+\end{lemma}
+
+\begin{proof}
+(\ref{firststep}) is first-step analysis: condition on the first block. For
+the second statement, by the Markov property $E[\mathbf{1}_{\text{win}}\mid
+d_{0},\dots,d_{t+1}]=W(d_{t+1})$, and then apply the tower property. The linear
+system (\ref{firststep}) has a unique solution because the race ends with
+probability one.
+\end{proof}
+
+The second statement is what removes the extra bookkeeping variables in the
+main text (blocks mined $b$, steps $n$, attacker blocks $a$). For example, the
+relation $C(d,b+1)=C(d,b)+\bigl(1-W(d)\bigr)$ says that a block already mined
+is orphaned with probability $1-W(d)$; Lemma~\ref{lem:firststep} charges that
+amount at the moment the block is found. Writing $\bar{\rho}(d)$ for the
+expected step reward in state $d$, the five quantities are:
+
+\begin{center}%
+\begin{tabular}
+[c]{c|c|cc}%
+& $\bar{\rho}(d)$ & $\Phi(-1)$ & $\Phi(k)$\\\hline
+$W$ & $0$ & $1$ & $0$\\
+$T$ & $1$ & $0$ & $0$\\
+$C$ & $p\bigl(1-W(d-1)\bigr)$ & $0$ & $0$\\
+$G$ & $p\,W(d-1)-q$ & $0$ & $0$\\
+$F$ & $-r\,W(d+1)$ & $-1$ & $f$%
+\end{tabular}
+\end{center}
+
+\noindent The compliant group finds the next block with probability $p$ in
+every state, including $d=0$ in Case~2: the joining miners are extra. Such a
+block moves the race to $d-1$ and is orphaned with probability $1-W(d-1)$. At
+$d=0$ this is $1-W(-1)=0$, since a compliant block found at a tie wins the
+race. The attacker finds the next block with probability $r$ and moves the
+race to $d+1$, and in Case~2 the attacker never joins. The table holds in both
+cases, with the appropriate $W$.
+
+Because $p\,W(d-1)-q=(p-q)\cdot1-p\bigl(1-W(d-1)\bigr)$ and all the boundary
+values are zero, linearity gives, in both cases,%
+\begin{equation}
+G(d)=(p-q)\,T(d)-C(d). \label{GTC}%
+\end{equation}
+In words, the compliant group finds $p\,T$ race blocks on average, loses $C$
+of them, and pays $q$ per step.
+
+\section{Case 1}
+
+\subsection{Solving the difference equation}
+
+Define
+\[
+Lf(d):=-f(d)+p\,f(d-1)+(1-p)\,f(d+1),\qquad m:=\frac{p}{1-p},\qquad
+M:=m^{k+1}.
+\]
+In Case~1, (\ref{firststep}) reads $LV=-\bar{\rho}$ on $0\leq d<k$. Every
+$\bar{\rho}$ in the table is a combination of $1$ and $m^{d}$, so the
+following lemma covers everything.
+
+\begin{lemma}
+\label{lem:L}Assume $p\neq\frac{1}{2}$.
+
+\begin{enumerate}
+\item[(i)] $L1=0$ and $Lm^{d}=0$.
+
+\item[(ii)] $Ld=1-2p$ and $L(d\,m^{d})=(2p-1)\,m^{d}$.
+
+\item[(iii)] If $Ly=g$ and $V$ solves $LV=g$ with $V(-1)=\Phi_{-}$,
+$V(k)=\Phi_{k}$, then
+\begin{equation}
+V(d)=\Phi_{-}W(d)+\Phi_{k}\bigl(1-W(d)\bigr)+y(d)-y(-1)W(d)-y(k)\bigl(1-W(d)\bigr),
+\label{bvp}%
+\end{equation}
+where $W$ is given in (\ref{Awin}) below.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) Substituting $r^{d}$ gives $(1-p)r^{2}-r+p=0$, with roots $r=1$ and
+$r=m$. (ii) $p(d-1)+(1-p)(d+1)=d+1-2p$. Also
+\[
+L(d\,m^{d})=m^{d}\Bigl[d\bigl(-1+pm^{-1}+(1-p)m\bigr)-pm^{-1}+(1-p)m\Bigr]%
+=m^{d}\bigl[0-(1-p)+p\bigr].
+\]
+(iii) The right-hand side of (\ref{bvp}) satisfies $L(\cdot)=Ly=g$ (because
+$LW=0$) and takes the values $\Phi_{-}$ and $\Phi_{k}$ at the two ends. The
+difference of two such solutions is $c_{1}m^{d}+c_{2}$ with zero boundary
+values. This forces $c_{1}(m^{k}-m^{-1})=0$, so $c_{1}=c_{2}=0$ because
+$m\neq1$.
+\end{proof}
+
+At $p=\frac{1}{2}$ the two roots coincide, and $1,d$ (with particular
+solutions $d^{2},d^{3}$) take the place of $1,m^{d}$. Every formula below has
+a removable singularity at $p=\frac{1}{2}$; for example, the limit of $W(d)$
+is $(k-d)/(k+1)$. The tables do not use $p=\frac{1}{2}$.
+
+\subsection{Probability of winning}
+
+Here $\bar{\rho}=0$, $\Phi_{-}=1$, $\Phi_{k}=0$, so $W(d)=c_{1}m^{d}+c_{2}$
+with $W(-1)=1$ and $W(k)=0$:%
+\begin{equation}
+W(d)=\frac{M-m^{d+1}}{M-1}=\frac{m^{k}-m^{d}}{m^{k}-m^{-1}}. \label{Awin}%
+\end{equation}
+For $k=2$ this gives $W(1)=m^{2}/(1+m+m^{2})=p^{2}/(1-p+p^{2})$. We will also
+use
+\[
+1-W(d-1)=\frac{m^{d}-1}{M-1},\qquad W(d+1)=\frac{M-m^{2}\,m^{d}}{M-1}.
+\]
+
+\subsection{Expected duration}
+
+Here $LT=-1$, and by Lemma~\ref{lem:L}(ii), $y=-d/(1-2p)$ is a particular
+solution. Since $y(-1)=1/(1-2p)$ and $y(k)=-k/(1-2p)$, (\ref{bvp}) gives%
+\begin{equation}
+T(d)=\frac{k-d-(k+1)W(d)}{1-2p}. \label{WaldT}%
+\end{equation}
+At $d=1$, $k-1-(k+1)W(1)=\bigl[(k+1)m^{2}-2m^{k+1}-(k-1)\bigr]/(M-1)$.
+Dividing the numerator and denominator by $m$,%
+\begin{equation}
+T(1)=\frac{1}{1-2p}\,\frac{(k+1)m-(k-1)m^{-1}-2m^{k}}{m^{k}-m^{-1}}.
+\label{fullT}%
+\end{equation}
+For $k=2$ this gives $T(1)=(1+p)/(1-p+p^{2})$. Formula (\ref{WaldT}) is also
+Wald's identity: the mean increment of $d$ per step is $1-2p$, so
+$(1-2p)T(d)=E[d_{\tau}]-d=k-(k+1)W(d)-d$.
+
+\subsection{Expected cost to compliant miners}
+
+Here $LC=-p\bigl(1-W(d-1)\bigr)=-p(m^{d}-1)/(M-1)$. By Lemma~\ref{lem:L}(ii),
+\[
+y_{C}(d)=\frac{p\,d\,(m^{d}+1)}{(1-2p)(M-1)}%
+\]
+is a particular solution, since $Ly_{C}=\frac{p}{(1-2p)(M-1)}\bigl[(2p-1)m^{d}%
++(1-2p)\bigr]$. With zero boundary values, (\ref{bvp}) gives%
+\begin{equation}
+C(d)=\frac{p}{(1-2p)(M-1)}\Bigl[d\,(m^{d}+1)+(1+m^{-1})W(d)-k\,(m^{k}%
++1)\bigl(1-W(d)\bigr)\Bigr]. \label{Cgen}%
+\end{equation}
+At $d=1$, use $W(1)=(M-m^{2})/(M-1)$ and $1-W(1)=(m^{2}-1)/(M-1)$, and expand:%
+\begin{equation}
+C(1)=\frac{p}{1-2p}\,\frac{(1-k)m^{k+2}+2m^{k+1}+(k+1)m^{k}-(k+1)m^{2}%
+-2m+k-1}{(M-1)^{2}}. \label{eyecandy}%
+\end{equation}
+For $k=2$ this gives $C(1)=p(1-p)^{2}/(1-p+p^{2})^{2}$.
+
+\subsection{Expected gain of compliant miners}
+
+By (\ref{GTC}), $G(1)=(p-q)T(1)-C(1)$. Writing this over a common
+denominator,%
+\begin{multline}
+G(1)=\frac{1}{(1-2p)(M-1)^{2}}\Bigl\{(p-q)(M-1)\bigl[(k+1)m^{2}-2m^{k+1}%
+-(k-1)\bigr]\\
+-p\bigl[(1-k)m^{k+2}+2m^{k+1}+(k+1)m^{k}-(k+1)m^{2}-2m+k-1\bigr]\Bigr\}.
+\label{G_app}%
+\end{multline}
+For $k=2$ this gives $G(1)=(p-q)(1+p)/(1-p+p^{2})-p(1-p)^{2}/(1-p+p^{2})^{2}$.
+
+\subsection{Gain or loss of the non-compliant miner}
+
+Here $LF=r\,W(d+1)=r\bigl(M-m^{2}m^{d}\bigr)/(M-1)$. By Lemma~\ref{lem:L}(ii),
+a particular solution is $y_{F}(d)=r\,d\,(M+m^{d+2})/\bigl((1-2p)(M-1)\bigr)$.
+With $\Phi_{-}=-1$ and $\Phi_{k}=f$, (\ref{bvp}) gives%
+\begin{equation}
+F(d)=f\bigl(1-W(d)\bigr)-W(d)-\frac{r}{1-p}A(d), \label{Fgen}%
+\end{equation}
+where%
+\begin{multline}
+A(d):=\frac{-(1-p)}{(1-2p)(M-1)}\Bigl[d\,(M+m^{d+2})+(M+m)W(d)\\
+-k\,(M+m^{k+2})\bigl(1-W(d)\bigr)\Bigr]. \label{Agen}%
+\end{multline}
+$A(d)$ is the expected number of non-compliant race blocks, from all miners
+on that side, that end up orphaned. Each non-compliant block belongs to the
+attacker with probability $r/(1-p)$. Because $F$ is linear in $f$,
+\[
+F(1)=\alpha f+\beta,\qquad\alpha=1-W(1),\qquad\beta=-W(1)-\frac{r}{1-p}%
+A(1),\qquad f^{\ast}=-\beta/\alpha,
+\]
+where $f^{\ast}$ is the breakeven fee. For $k=2$,%
+\[
+F(1)=\frac{(1-p)f-p^{2}\bigl(1+rp/(1-p+p^{2})\bigr)}{1-p+p^{2}},\qquad
+f^{\ast}=\frac{p^{2}\,(1-p+p^{2}+rp)}{(1-p)(1-p+p^{2})}.
+\]
+The hashrate $r$ affects only $\beta$, and only slightly: the attacker's share
+of orphaned race blocks is small unless $k$ is large and $p$ is near or above
+$\frac{1}{2}$.
+
+
+\section{Case 2: some miners join the compliant chain at a tie}
+
+Recall that $P=p+\gamma(1-p)$ is the probability that the compliant chain
+finds the next block when $d=0$. We assume the attacker is not among the
+joining miners, which requires $r\leq(1-\gamma)(1-p)$; this holds in every
+table below. In the states $d\geq1$ the race is exactly Case~1. The idea is to
+cut the race at its visits to $d=0$.
+
+\subsection{Renewal at the tie}
+
+Starting from $d=1$, the race moves as in Case~1 until it first reaches $0$ or
+$k$. This \emph{excursion} is the Case~1 race shifted up by one: the state $0$
+plays the role of $-1$, and $k$ plays the role of $k-1$. So the Case~1
+formulas with $k$ replaced by $k-1$, evaluated at $d=0$, describe it. Write:%
+\begin{align*}
+h  &  :=\Pr(\text{excursion ends at }0)=\frac{m^{k}-m}{m^{k}-1},\\
+\tau &  :=E[\text{length of excursion}]=\frac{k-1-kh}{1-2p},\\
+c  &  :=E[\#\text{compliant blocks};\text{ ends at }k]\\
+&  \phantom{:}=\frac{p}{(1-2p)(m^{k}-1)}\Bigl[(1+m^{-1})h-(k-1)(m^{k-1}%
++1)(1-h)\Bigr],\\
+a  &  :=E[\#\text{non-compliant blocks};\text{ ends at }0]\\
+&  \phantom{:}=\frac{-(1-p)}{(1-2p)(m^{k}-1)}\Bigl[(m^{k}+m)h-(k-1)(m^{k}%
++m^{k+1})(1-h)\Bigr].
+\end{align*}
+These are formulas (\ref{Awin}), (\ref{WaldT}), (\ref{Cgen}) and (\ref{Agen})
+evaluated at $d=0$, with $k$ replaced by $k-1$. In addition, the excursion contains $p\tau$ compliant blocks
+on average, so $E[\#\text{compliant blocks};\text{ ends at }0]=p\tau-c$.
+
+\begin{lemma}
+\label{lem:renewal}Let $V$ be any of the quantities of
+Lemma~\ref{lem:firststep} in Case~2. Let $E_{1}$ be the expected reward
+collected from $d=1$ until the excursion ends, plus $\Phi(k)(1-h)$. Then%
+\[
+V(1)=\frac{E_{1}+h\bigl(\bar{\rho}(0)+P\,\Phi(-1)\bigr)}{D},\qquad
+D:=1-(1-P)\,h.
+\]
+\end{lemma}
+
+\begin{proof}
+By the strong Markov property at the end of the excursion, $V(1)=E_{1}%
++h\,V(0)$. By (\ref{firststep}) at the tie, $V(0)=\bar{\rho}(0)+P\,\Phi
+(-1)+(1-P)V(1)$. Solve the two equations for $V(1)$; note $D>0$.
+\end{proof}
+
+A race at $d\geq0$ must pass through $0$ to be won, so $W(d)=B\,h(d)$, where
+$h(d)=(m^{k}-m^{d})/(m^{k}-1)$ and $B:=W(0)$. Therefore every step reward of
+the form $W(\cdot)$ during an excursion is $B$ times the probability that the
+excursion ends at $0$. By the second part of Lemma~\ref{lem:firststep}, this
+turns into $B\times E[\,\cdot\,;\text{ ends at }0]$.
+
+\subsection{The five quantities}
+
+\paragraph{Winning probability.} Here $E_{1}=0$, $\bar{\rho}(0)=0$ and
+$\Phi(-1)=1$, so%
+\[
+W(1)=\frac{P\,h}{D}=\frac{P\,(m^{k}-m)}{P\,m^{k}+(1-P)\,m-1},\qquad
+B=W(0)=\frac{P}{D}.
+\]
+
+\paragraph{Expected duration.} Here $E_{1}=\tau$ and $\bar{\rho}(0)=1$, so%
+\[
+T(1)=\frac{\tau+h}{D}.
+\]
+
+\paragraph{Expected cost to compliant miners.} Here $\bar{\rho}(0)=p\bigl(1-W(-1)\bigr)=0$.
+During the excursion, a compliant block is orphaned with probability
+$1-B\,h(\cdot)$, so $E_{1}=p\tau-B(p\tau-c)$ and%
+\[
+C(1)=\frac{(1-B)\,p\tau+B\,c}{D}.
+\]
+
+\paragraph{Expected gain of compliant miners.} By (\ref{GTC}),
+$G(1)=(p-q)\,T(1)-C(1)$.
+
+\paragraph{Non-compliant miner.} Here $\Phi(-1)=-1$ and $\Phi(k)=f$. At the
+tie, an attacker block sends the race to $1$ and is orphaned with probability
+$W(1)$, so $\bar{\rho}(0)=-r\,W(1)$. During the excursion,
+$E_{1}=f(1-h)-\frac{r}{1-p}B\,a$. Hence%
+\[
+F(1)=\frac{f(1-h)-\frac{r}{1-p}B\,a-h\bigl(P+r\,W(1)\bigr)}{D},\qquad
+\alpha=\frac{1-h}{D}=1-W(1),
+\]
+and the breakeven fee is%
+\[
+f^{\ast}=\frac{\frac{r}{1-p}B\,a+h\bigl(P+r\,W(1)\bigr)}{1-h}.
+\]
+
+\subsection{The case $k=2$}
+
+When $k=2$ the excursion is a single block: $h=p$, $\tau=1$ and $c=a=0$. Put%
+\[
+\Delta:=D=1-p(1-P)=1-p(1-p)(1-\gamma).
+\]
+Then%
+\begin{align*}
+W(1)  &  =\frac{pP}{\Delta}, & T(1)  &  =\frac{1+p}{\Delta},\\
+C(1)  &  =\frac{p(1-p)(1-P)}{\Delta^{2}}, & G(1)  &  =\frac{(p-q)(1+p)}%
+{\Delta}-\frac{p(1-p)(1-P)}{\Delta^{2}},\\
+F(1)  &  =\frac{(1-p)f-pP\bigl(1+rp/\Delta\bigr)}{\Delta}, & f^{\ast}  &
+=\frac{pP\,(\Delta+rp)}{(1-p)\,\Delta}.
+\end{align*}
+With $\gamma=0$ (so $P=p$ and $\Delta=1-p+p^{2}$) these are the Case~1
+formulas. As $\gamma$ increases, $P$ and $\Delta$ increase: $W$ and $f^{\ast}$
+go up, while $T$ and $C$ go down. $G$ is not monotone in $\gamma$. Its
+positive part $(p-q)T$ shrinks along with the race, because $G$ compares
+mining with switching off over the length of the race. $C$ is the cleaner
+measure of what joining miners save the compliant group.
+
+\subsection{Verification}
+
+The script \texttt{feather\_tables.py} produces every number in this appendix
+and every table in Section~\ref{feather}, in three independent ways:
+\begin{enumerate}
+\item solving the linear system (\ref{firststep}) exactly in rational
+arithmetic;
+\item evaluating the closed forms above;
+\item simulating $2\times10^{5}$ races for each parameter choice.
+\end{enumerate}
+The first two agree exactly for $k\in\{2,3,5,7\}$ and
+$\gamma\in\{0,0.2,0.5\}$. The simulations agree to within sampling error.
+
+\section{Withholding during a paid race\label{app:withhold}}
+
+\subsection{Summary}
+
+The censor expects more than 50\% of the hashrate to join, so $k=\infty$. With
+hashrate $p$ attempting the reorg, the expected race lasts $(d+1)/(2p-1)$
+blocks, so each published compliant block shortens the race by
+$\delta=1/(2p-1)$ blocks on average.
+
+A participating miner with hashrate $h$ who finds a block faces the following
+trade-off. Publishing earns the finder's fee $b\delta h$. But it also shortens
+the race, and with it the stream of participation bonuses ($ah$ per block) and
+of future finder's fees. Withholding keeps the race going, but the miner's
+published blocks then fall short of what their FPPS shares predict. Once the
+pool detects this, it expels the miner, which ends their payments. The first
+two parts of the trade-off can be computed exactly. The third depends on how
+good the pool's detection is and on what the miner believes about it, neither
+of which we can observe. The rest of this section computes the first two parts
+and then asks what can be said for \emph{any} belief about detection.
+
+The computable part reduces to a single threshold,
+\[
+h^{\ast}=\left(  1-\frac{a}{b}\right)  (2p-1).
+\]
+Publishing one block is worth $b\delta h$ and costs $\delta h(a+b\delta h)$ in
+lost future income, so it pays exactly when $h<h^{\ast}$. The same threshold
+governs any strategy of withholding a fixed fraction $q$ of one's blocks.
+
+\begin{proposition}
+\label{prop:withhold}Suppose $p>\frac{1}{2}$, $k=\infty$, and a participating
+miner with hashrate $h$ withholds a fraction $q\in\lbrack0,1]$ of the blocks
+they find. Suppose the miner believes that, while the race lasts, the pool
+catches a miner withholding at rate $q$ with probability $\eta(q)$ per block,
+and that a caught miner is expelled (their payments stop) and bears a further
+cost $L\geq0$. Here $\eta$ is continuous and nondecreasing, $\eta(0)=0$, and
+$\eta(q)>0$ for $q>0$.
+
+\begin{enumerate}
+\item If $h<h^{\ast}$, the miner's best choice is $q=0$, whatever $\eta$ and
+$L$ are.
+
+\item If $h>h^{\ast}$, an optimal $q$ exists. Without detection the miner would
+withhold everything. Suppose instead that withholding a small fraction is
+nearly undetectable, and that withholding everything is likely to be caught
+quickly. Then every optimal choice of $q$ lies strictly between $0$ and $1$.
+\end{enumerate}
+\end{proposition}
+
+\noindent This is a restatement of Theorem \ref{thm:withhold} below, which
+gives the proof and makes the two conditions in Part 2 precise. Part 2 does not
+depend on the shape of the detection curve, only on how the miner's payoff
+compares at the two extremes. Part 2 also covers large miners with
+$h\geq2p-1$. Without detection, such a miner could stall the race forever by
+withholding. With any positive detection rate, expulsion ends their income in
+finite expected time, so they face the same trade-off as everyone else. The
+same conclusion holds when $k$ is finite (see the remarks after the theorem).
+
+For example, take $p=0.6$, $a=0.2$ and $b=1$, so $h^{\ast}=0.16$. Miners below
+16\% publish everything; miners above 16\% are tempted to withhold. Raising
+$b$ relative to $a$ raises $h^{\ast}$, but never above $2p-1$. To keep every
+participant below the threshold, the censor needs
+$b\geq a(2p-1)/(2p-1-h_{\max})$, where $h_{\max}$ is the hashrate of the
+largest participant. For an 18\% miner starting one block behind ($d=1$), the
+conditions in Part 2 become concrete:
+
+\begin{itemize}
+\item full withholding loses to honesty if the pool catches a miner who
+publishes nothing within about 55 blocks on average. An honest 18\% miner goes
+25 blocks without a block less than 1\% of the time, so this is easy for a pool;
+
+\item a little withholding pays if, at small $q$, the detection rate is below
+roughly $q/200$ per block. This holds for any pool that rarely accuses honest
+miners. Catching small withholders faster requires flagging honest miners
+several times a week (Remark \ref{rem:evidence}).
+\end{itemize}
+
+\noindent So a large miner's best response is to publish enough blocks to look
+honest while dragging out the race.
+
+\subsection{Set-up}
+
+The censor expects to win: $p>\frac{1}{2}$ and $k=\infty$. Write $c:=2p-1>0$
+and $n:=d+1$. As in Section~\ref{app:race}, one step is one block found by
+anyone, including blocks that are later withheld. Total hashrate does not
+change, so a step still takes ten minutes on average. Without withholding, the
+expected race length is $T(d)=n/c$ by (\ref{WaldT}) with $W\equiv1$. Each
+published compliant block therefore shortens the race by
+$\delta:=T(d)-T(d-1)=1/c$ blocks, for every $d$.
+
+A participating miner has hashrate $h$, which counts as part of the compliant
+group $p$. On top of normal FPPS payments, the pool pays this miner:
+
+\begin{itemize}
+\item a \emph{participation bonus} of $ah$ per step;
+
+\item a \emph{finder's fee} of $b\delta h=bh/c$ for each block the miner
+publishes. The pool computes $\delta$ assuming nobody withholds.
+\end{itemize}
+
+\noindent The miner withholds each block they find, independently, with
+probability $q\in\lbrack0,1]$, and discards it. We do not consider releasing a
+withheld block later, as in selfish mining. All other miners publish what they
+find. Let $\tau$ be the step at which the race ends. The miner's expected
+income per step is
+\[
+\mu(q):=h\bigl(a+bh(1-q)/c\bigr).
+\]
+
+\paragraph{Detection.} The miner's beliefs about detection are a function
+$\eta:[0,1]\rightarrow\lbrack0,1)$ and a number $L\geq0$. After each step of
+the race, if the race has not ended, the pool independently catches a miner
+withholding at rate $q$ with probability $\eta(q)$. A caught miner is expelled:
+they receive no further bonuses or finder's fees, and they bear an additional
+cost $L$ (fines, clawed-back bonuses, lost future business). We assume $\eta$
+is continuous and nondecreasing, $\eta(0)=0$, and $\eta(q)>0$ for $q>0$. Let
+$D$ be the step at which the miner is caught ($D=\infty$ if $q=0$); $D$ is
+geometric with parameter $\eta(q)$ and independent of the race. The miner is
+paid for $N:=\min(\tau,D)$ steps and maximizes
+\[
+U(q):=E\Bigl[\sum_{t\leq N}x_{t}\Bigr]-L\,\Pr(D<\tau),
+\]
+where $x_{t}$ is the miner's income in step $t$. A constant detection rate per
+block is a simplification; Remark \ref{rem:otherdetection} explains what the
+argument needs in general.
+
+\subsection{Duration and income}
+
+The first lemma describes the race when the miner is never caught. We write
+$V(q)$ for the miner's expected income in that case.
+
+\begin{lemma}
+\label{lem:lazy}Fix $d\geq0$ and $q\in\lbrack0,1]$.
+
+\begin{enumerate}
+\item[(i)] If $hq<c$, then $E[\tau]=n/(c-hq)$ and%
+\begin{equation}
+V(q)=\mu(q)\,E[\tau]=\frac{n\,h\,\bigl(a+bh(1-q)/c\bigr)}{c-hq}.
+\label{Vwithhold}%
+\end{equation}
+
+\item[(ii)] If $hq\geq c$ and $a>0$, then $E[\tau]$ and $V(q)$ are infinite.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+In each step, $d$ falls with probability $(p-h)+h(1-q)=p-hq$, rises with
+probability $1-p$, and stays put with probability $hq$ (a block found and
+withheld). The increments are i.i.d. with mean $-(c-hq)$. If $c-hq>0$, then
+$\tau$ is integrable, and Wald's identity gives $-n=E[d_{\tau}-d]=-(c-hq)E[\tau]$.
+The miner's income $x_{t}$ in step $t$ has mean $\mu(q)$, and the event
+$\{\tau\geq t\}$ depends only on earlier steps. Wald's identity therefore
+applies again: $E[\sum_{t\leq\tau}x_{t}]=\mu(q)E[\tau]$. If $c-hq\leq0$, the
+walk has zero or upward drift. It then either never returns to $-1$ or takes
+infinitely long on average, and the bonus $ah$ per step makes $V$ infinite.
+\end{proof}
+
+\begin{lemma}
+\label{lem:Vshape}Let $h^{\ast}:=(1-a/b)\,c$ and $\bar{q}:=\min(1,c/h)$. On
+$[0,\bar{q})$,%
+\[
+V^{\prime}(q)=\frac{n\,h^{2}\,\bigl(bh-(b-a)c\bigr)}{c\,(c-hq)^{2}%
+},\qquad V^{\prime\prime}(q)=\frac{2h}{c-hq}\,V^{\prime}(q).
+\]
+So $V$ is strictly decreasing if $h<h^{\ast}$, constant if $h=h^{\ast}$, and
+strictly increasing and convex if $h>h^{\ast}$. If $a>0$, then $h^{\ast}<c$.
+\end{lemma}
+
+\begin{proof}
+Write $V=\frac{nh}{c}\cdot\frac{A-Bq}{c-hq}$ with $A=ac+bh$ and $B=bh$. By the
+quotient rule, the numerator of the derivative is $hA-Bc=h\bigl(bh-(b-a)c\bigr)$,
+which does not depend on $q$. Differentiating once more gives the factor
+$2h/(c-hq)$.
+\end{proof}
+
+The threshold has a one-block reading. Publishing a block earns $bh/c$. It
+also shortens the expected race by $1/c$ steps, each of which was worth
+$\mu(0)=h(a+bh/c)$ to an honest miner. So publishing pays exactly when
+$b>a+bh/c$, i.e.\ when $h<h^{\ast}$. Lemma~\ref{lem:Vshape} says the same
+threshold governs every fixed withholding rate $q$, not just a single block.
+
+The next lemma accounts for detection.
+
+\begin{lemma}
+\label{lem:caught}Fix $q\in(0,1]$, write $\eta=\eta(q)$ and $s=1-\eta$, and
+let
+\[
+G_{q}(s)=\frac{(1-hqs)-\sqrt{(1-hqs)^{2}-4(p-hq)(1-p)s^{2}}}{2(1-p)s}%
+\]
+be the generating function $E[s^{T}]$ of the time $T$ the race takes to fall
+by one level. Then%
+\begin{align}
+E[N]  &  =\frac{1-G_{q}(s)^{n}}{\eta},\qquad\Pr(D<\tau)=\frac{1-G_{q}%
+(s)^{n}-\eta}{1-\eta},\nonumber\\
+U(q)  &  =\mu(q)\,E[N]-L\,\Pr(D<\tau). \label{Ucaught}%
+\end{align}
+Moreover $E[N]\leq1/\eta$, so $U(q)\leq\mu(q)/\eta(q)$ is finite for every
+$q>0$, including when $hq\geq c$. At $q=0$, $U(0)=V(0)=nh(ac+bh)/c^{2}$.
+\end{lemma}
+
+\begin{proof}
+The event $\{N\geq t\}=\{\tau\geq t,\,D\geq t\}$ is determined by the first
+$t-1$ steps, so Wald's identity gives $E[\sum_{t\leq N}x_{t}]=\mu(q)E[N]$.
+Since $D$ is independent of the race,
+$E[N]=\sum_{j\geq0}\Pr(\tau>j)\,s^{j}=(1-E[s^{\tau}])/(1-s)$. The walk moves
+down at most one level per step, so $\tau$ is the sum of $n$ independent
+copies of $T$, and $E[s^{\tau}]=G_{q}(s)^{n}$. Conditioning on the first step
+gives $G=s\bigl((p-hq)+hq\,G+(1-p)G^{2}\bigr)$, and $G_{q}(s)$ is the root in
+$[0,1)$; the discriminant is positive for $s<1$. Finally,
+\[
+\Pr(D<\tau)=\sum_{t\geq1}\eta s^{t-1}\Pr(\tau>t)=\frac{\eta}{s}\bigl(E[N]-1\bigr),
+\]
+which simplifies to the stated formula. The bound holds because $N\leq D$
+and $E[D]=1/\eta$.
+\end{proof}
+
+\subsection{The withholding theorem}
+
+\begin{theorem}
+\label{thm:withhold}Assume $p>\frac{1}{2}$, $k=\infty$, and $(\eta,L)$ are as
+above.
+
+\begin{enumerate}
+\item[(a)] If $h<h^{\ast}$, then $q=0$ is the unique maximizer of $U$ on
+$[0,1]$, for every such $\eta$ and $L$.
+
+\item[(b)] Suppose $h>h^{\ast}$ ($h$ may exceed $c$). Then $U$ is continuous on
+$[0,1]$ and attains its maximum. Suppose that
+
+\begin{enumerate}
+\item[(i)] there is $q_{1}\in(0,1]$ with $U(q_{1})>U(0)$ (withholding a little
+pays), and
+
+\item[(ii)] there is $q_{2}\in\lbrack0,1)$ with $U(q_{2})>U(1)$ (withholding
+everything is worse than withholding $q_{2}$).
+\end{enumerate}
+
+Then every maximizer $q^{\ast}$ lies in the open interval $(0,1)$, and
+$U^{\prime}(q^{\ast})=0$ wherever $U$ is differentiable.
+
+\item[(c)] (Benchmark without detection, $\eta\equiv0$ and $L=0$.) If
+$h^{\ast}<h<c$, the unique maximizer is $q=1$. If $h\geq c$, the payoff is
+unbounded: $V(q)\rightarrow\infty$ as $q\uparrow c/h$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) Let $q>0$. Since $hq\leq h<h^{\ast}<c$, Lemma~\ref{lem:lazy}(i) applies.
+Because $\eta(q)>0$, the miner is caught before the race ends with positive
+probability, so $E[N]<E[\tau]$. Hence
+\[
+U(q)\leq\mu(q)E[N]<\mu(q)E[\tau]=V(q)<V(0)=U(0),
+\]
+using $L\geq0$ and Lemma~\ref{lem:Vshape}.
+
+(b) On $(0,1]$, $s=1-\eta(q)<1$ and $G_{q}(s)$ is continuous in $(q,s)$, so
+$U$ is continuous there by (\ref{Ucaught}). For continuity at $0$, write
+$E[N_{q}]=\sum_{j}\Pr(\tau_{q}>j)\,s_{q}^{j}$. Each term tends to
+$\Pr(\tau_{0}>j)$ as $q\rightarrow0$. For $hq\leq c/2$ the walk drifts toward
+$-1$ at rate at least $c/2$. Hoeffding's inequality then gives
+$\Pr(\tau_{q}>j)\leq Cr^{j}$ with $C$ and $r<1$ not depending on $q$. By
+dominated convergence $E[N_{q}]\rightarrow E[\tau_{0}]$, and
+$\Pr(D_{q}<\tau_{q})\leq\eta(q)\sum_{t}Cr^{t}\rightarrow0$. So
+$U(q)\rightarrow U(0)$. By the extreme value theorem $U$ attains its maximum
+on $[0,1]$. Condition (i) says $0$ is not a maximizer, and condition (ii) says
+$1$ is not either.
+
+(c) This follows from Lemmas~\ref{lem:Vshape} and~\ref{lem:lazy}(ii).
+\end{proof}
+
+Part (b) is purely topological: it uses only that $U$ is continuous and how $U$
+compares at the two ends. It assumes nothing about the shape of the detection
+curve beyond continuity. The two conditions are easy to check.
+
+\begin{itemize}
+\item \textbf{Condition (i)} holds if $\eta$ has a right derivative
+$\eta^{\prime}(0)$ at $0$ with
+\begin{equation}
+\eta^{\prime}(0)\Bigl[\tfrac{1}{2}\mu(0)\,E[\tau_{0}(\tau_{0}-1)]+L\bigl(E[\tau
+_{0}]-1\bigr)\Bigr]<V^{\prime}(0)=\frac{nh^{2}\bigl(bh-(b-a)c\bigr)}{c^{3}},
+\label{cond1}%
+\end{equation}
+where $E[\tau_{0}]=n/c$ and $E[\tau_{0}(\tau_{0}-1)]=n(1-c^{2})/c^{3}%
++n^{2}/c^{2}-n/c$. In particular, (i) holds whenever $\eta^{\prime}(0)=0$. To
+see this, note that $1-s^{j}\leq j\eta$ and $\Pr(D<\tau)\leq\eta(E[\tau]-1)$.
+Together these give
+\[
+U(q)-U(0)\geq V(q)-V(0)-\eta(q)\bigl[\tfrac{1}{2}\mu(q)E[\tau_{q}(\tau
+_{q}-1)]+L(E[\tau_{q}]-1)\bigr].
+\]
+Divide by $q$ and let $q\rightarrow0$. The moments of $\tau_{q}$ are
+continuous at $q=0$, since the race is a sum of $n$ independent one-level
+descents.
+
+\item \textbf{Condition (ii)} holds with $q_{2}=0$ if
+\begin{equation}
+\eta(1)>\frac{ac^{2}}{n(ac+bh)}, \label{cond2}%
+\end{equation}
+because $U(1)\leq\mu(1)/\eta(1)=ha/\eta(1)$ by Lemma~\ref{lem:caught}, and
+$U(0)=nh(ac+bh)/c^{2}$. In words: a miner who withholds everything expects to
+be caught within $n(ac+bh)/(ac^{2})$ blocks. This holds for any $L\geq0$.
+\end{itemize}
+
+\noindent In the example of the summary ($p=0.6$, $a=0.2$, $b=1$, $h=0.18$,
+$d=1$):
+\begin{itemize}
+\item (\ref{cond2}) requires $\eta(1)>0.018$, i.e.\ detection within about 55
+blocks;
+\item (\ref{cond1}) requires $\eta^{\prime}(0)<0.0050$ when $L=0$, and
+$\eta^{\prime}(0)<0.0044$ when $L=0.5$.
+\end{itemize}
+These values were checked by simulating the race with detection.
+
+\begin{remark}[Uniqueness and dependence on parameters]
+In case (b), $V$ is convex and $U$ need not be concave, so there may be
+several optimal withholding rates. If $U$ is strictly concave, the maximizer
+is unique, and by the implicit function theorem it moves smoothly with
+$a,b,p,h$. Without any such assumption, Berge's maximum theorem still gives
+that the set of maximizers changes upper hemicontinuously with the parameters,
+with $L$, and with $\eta$ (in the sup norm).
+\end{remark}
+
+\begin{remark}[Other detection models\label{rem:otherdetection}]
+A constant detection rate per block is only for concreteness. A real pool's
+evidence accumulates, so its detection rate rises over time. The proof of (a)
+uses only that payments stop at detection and that detection before the end
+of the race has positive probability. The proof of (b) uses only that
+$U(q)$ is finite and continuous in $q$, which holds whenever the miner is
+never caught at $q=0$ and is caught in finite expected time for $q>0$. The
+explicit formulas (\ref{Ucaught})--(\ref{cond2}) are specific to a constant
+rate.
+\end{remark}
+
+\begin{remark}[Finite $k$]
+If the censor does not expect a majority and sets $k<\infty$, the race with
+withholding and detection is still a finite absorbing Markov chain: add an
+absorbing state ``caught''. Its transition probabilities are continuous in
+$q$, and the race ends with probability one for every $q\in\lbrack0,1]$. The
+expected payoff $U_{k}(q)$ is therefore continuous by Cramer's rule, and the
+proof of part (b) applies word for word. What no longer holds is the single
+threshold $h^{\ast}$. Whether a little withholding pays depends on $k$, on the
+starting state, and on how the pool sets $\delta(d)$, which is no longer
+constant in $d$.
+\end{remark}
+
+\begin{remark}[How much evidence a pool has\label{rem:evidence}]
+The pool knows the miner's hashrate from their FPPS shares. Over a window of
+$W$ blocks, an honest miner's published blocks are approximately Poisson with
+mean $\lambda=hW$; a miner withholding at rate $q$ has mean $\lambda(1-q)$.
+
+Consider a pool that flags the miner when the count falls to some threshold
+$k$ or below. Its false-accusation rate is $\alpha=\Pr(\text{Poisson}%
+(\lambda)\leq k)$, and its detection probability rises at rate
+$\lambda\Pr(\text{Poisson}(\lambda)=k)$ in $q$ at $q=0$. That rate is small
+exactly when $\alpha$ is small: a pool can catch small withholders faster only
+by accusing honest miners more often.
+
+In the example above ($h=0.18$), condition (\ref{cond1}) fails only for tests
+that wrongly flag an honest miner in roughly 15--20\% of 100- to 500-block
+windows, i.e.\ several false accusations a week. Any pool that cares about its
+honest customers satisfies condition (i) with room to spare.
+
+At the other end, a miner who publishes nothing is conspicuous: an honest 18\%
+miner goes 25 blocks without a block with probability $0.82^{25}<1\%$. This is
+comfortably within the 55 blocks that (\ref{cond2}) allows. Evidence also
+accumulates across races, so a pool that sees many reorgs detects faster.
+\end{remark}
+
+\iffalse
+
+
+\fi
+
+\end{document}
